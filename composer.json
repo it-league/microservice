@@ -1,0 +1,19 @@
+{
+    "name": "itleague/microservice",
+    "description": "General library for microservices",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Popov",
+            "email": "alexander.popov.gg@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "itleague\\microservice\\": "src/"
+
+        }
+    }
+}
