@@ -45,7 +45,7 @@ abstract class Repository implements RepositoryInterface
 
     protected function setFilters(): void
     {
-        $this->filter = $this->validate(app('query')->filter(), 'filter');
+        $this->filter = $this->validate(request()->filter(), 'filter');
 
         $keyName = $this->model->getModel()->getKeyName();
         $keyValue = Arr::get($this->filter, $keyName);
@@ -69,11 +69,12 @@ abstract class Repository implements RepositoryInterface
     {
         $this->setFilters();
 
-        $page = app('query')->page();
-        if ($page['all'] === true) {
+        if (request()->page('all') === true) {
             $collection = $this->model->get();
         } else {
-            $collection = $this->model->getModel()->paginate($page['size'], ['*'], $page['number']);
+            $collection = $this->model
+                ->paginate(request()->page('size'), ['*'], 'page[number]', request()->page('number'))
+                ->withPath(request()->fullUrlWithQuery(request()->except('page.number')));
         }
 
 //        $this->addRelations($collection);

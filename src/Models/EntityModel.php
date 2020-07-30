@@ -50,23 +50,6 @@ abstract class EntityModel extends Model
     }
 
     /**
-     * Надстройка над методом Builder::paginate() с аналогичными параметрами
-     * Но генерирует правильные пути для метаданных
-     *
-     * @param int $perPage
-     * @param array|string[] $columns
-     * @param string $pageName
-     * @param int|null $page
-     *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public function paginate(int $perPage = 15, array $columns = ['*'], string $pageName = 'page', ?int $page = null)
-    {
-        return parent::paginate($perPage, $columns, 'page[number]', $pageName, $page)
-            ->withPath(request()->fullUrlWithQuery(request()->except('page.number')));
-    }
-
-    /**
      * Сохраняет переданные, но незаполненные в текущей модели атрибуты в спец. свойство
      * Эти атрибуты могут использоваться, например, для сохранения релэйшенов или переводов через систему событий
      *

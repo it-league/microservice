@@ -1,24 +1,41 @@
 <?php
 
 
-namespace itleague\microservice\Helpers;
+namespace itleague\microservice\Http\Helpers;
 
 
 use Illuminate\Support\Arr;
 
-class QueryParameters
+class RequestQuery
 {
-    private $fields = false;
+    // TODO: добавить сортировку
+
+    private ?array $fields;
     private array $page;
-    private $query;
-    private $filter;
+    private ?array $filter;
+
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
+
+    public static function instance() {
+        static $self;
+        if(!isset($self)) {
+            $self = new static;
+        }
+        return $self;
+    }
 
     public function fields(): ?array
     {
-        if ($this->fields === false) {
-            $fields = (string)app('request')->query('fields');
+        if (! isset($this->fields)) {
+            $fields = (string)request()->query('fields');
             if (strlen($fields) > 0) {
-                $this->fields = array_map('trim', explode(',', $this->fields));
+                $this->fields = array_map('trim', explode(',', $fields));
             } else {
                 $this->fields = null;
             }
@@ -30,12 +47,12 @@ class QueryParameters
     /**
      * @param string|null $field
      *
-     * @return array|mixed|null
+     * @return array|string|null
      */
-    public function page(string $field = null)
+    public function page(?string $field = null)
     {
         if (! isset($this->page)) {
-            $this->page = array_map('intval', (array)app('request')->query('page'));
+            $this->page = array_map('intval', (array)request()->query('page'));
             $this->page = [
                 'size' => Arr::get($this->page, 'size', 10),
                 'number' => Arr::get($this->page, 'number', 1),
@@ -47,27 +64,17 @@ class QueryParameters
 
         if (is_null($field)) {
             return $this->page;
-        } elseif (isset($this->page[$field])) {
+        } else {
             return $this->page[$field];
         }
-        return null;
-    }
-
-    public function query(): array
-    {
-        if (! isset($this->query)) {
-            $this->query = (array)app('request')->query();
-        }
-
-        return $this->query;
     }
 
     /**
      * @param string|null $field
      *
-     * @return array|mixed|null
+     * @return array|string|null
      */
-    public function filter(string $field = null)
+    public function filter(?string $field = null)
     {
         if (! isset($this->filter)) {
             $this->filter = (array)request()->query('filter');
