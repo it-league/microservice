@@ -13,6 +13,7 @@ class RequestQuery
     private ?array $fields;
     private array $page;
     private ?array $filter;
+    private ?array $sort;
 
     private function __construct()
     {
@@ -22,12 +23,40 @@ class RequestQuery
     {
     }
 
-    public static function instance() {
+    public static function instance()
+    {
         static $self;
-        if(!isset($self)) {
+        if (! isset($self)) {
             $self = new static;
         }
         return $self;
+    }
+
+    public function sort(): ?array
+    {
+        if (! isset($this->sort)) {
+            $sort = (string)request()->query('sort');
+
+            if (strlen($sort) > 0) {
+                $this->sort = array_map('trim', explode(',', $sort));
+
+                $this->sort = collect(explode(',', $sort))->mapWithKeys(function (string $field) {
+                    switch ($field[0]) {
+                        case '-':
+                            return [substr($field, 1) => 'desc'];
+                        case ' ':
+                            return [substr($field, 1) => 'asc'];
+                        default:
+                            return [$field => 'asc'];
+                    }
+                })->toArray();
+
+            } else {
+                $this->sort = null;
+            }
+        }
+
+        return $this->sort;
     }
 
     public function fields(): ?array

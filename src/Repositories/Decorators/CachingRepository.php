@@ -35,7 +35,7 @@ abstract class CachingRepository implements RepositoryInterface
 
     public function index(): Arrayable
     {
-        $hash = md5(json_encode(app('query')->query()));
+        $hash = md5(json_encode(request()->query()));
 
         return $this->cache->tags($this->tag)->remember("{$this->tag}:$hash", $this->ttl, function () {
             return $this->repository->index();
