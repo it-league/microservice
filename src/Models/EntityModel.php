@@ -63,4 +63,9 @@ abstract class EntityModel extends Model
         $this->unfilled = count($attributes) ? Arr::except($attributes, array_keys($this->attributes)) : [];
         return $result;
     }
+
+    public function getWith(): array
+    {
+        return $this->with;
+    }
 }

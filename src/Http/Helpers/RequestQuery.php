@@ -8,8 +8,6 @@ use Illuminate\Support\Arr;
 
 class RequestQuery
 {
-    // TODO: добавить сортировку
-
     private ?array $fields;
     private array $page;
     private ?array $filter;
@@ -39,18 +37,6 @@ class RequestQuery
 
             if (strlen($sort) > 0) {
                 $this->sort = array_map('trim', explode(',', $sort));
-
-                $this->sort = collect(explode(',', $sort))->mapWithKeys(function (string $field) {
-                    switch ($field[0]) {
-                        case '-':
-                            return [substr($field, 1) => 'desc'];
-                        case ' ':
-                            return [substr($field, 1) => 'asc'];
-                        default:
-                            return [$field => 'asc'];
-                    }
-                })->toArray();
-
             } else {
                 $this->sort = null;
             }

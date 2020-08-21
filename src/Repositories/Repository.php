@@ -4,12 +4,12 @@
 namespace itleague\microservice\Repositories;
 
 
-use itleague\microservice\Models\EntityModel;
-use itleague\microservice\Repositories\Interfaces\RepositoryInterface;
 use DB;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
+use itleague\microservice\Models\EntityModel;
+use itleague\microservice\Repositories\Interfaces\RepositoryInterface;
 use Validator;
 
 abstract class Repository implements RepositoryInterface
@@ -18,23 +18,14 @@ abstract class Repository implements RepositoryInterface
      * @var \itleague\microservice\Models\EntityModel|\Illuminate\Database\Eloquent\Builder
      */
     protected $model;
-//    protected $with = [];
     protected array $filter;
+    protected array $sort;
 
     public function __construct(EntityModel $model)
     {
         $this->model = $model;
     }
 
-//    /**
-//     * @param Model|\Illuminate\Database\Eloquent\Collection $model
-//     */
-//    protected function addRelations($model): void
-//    {
-//        $relations = $this->with;
-//        $relations = array_intersect($relations, app('query')->fields() ?? $relations);
-//        $model->load($relations);
-//    }
 
     protected function validate(array $data, string $method): array
     {
@@ -43,7 +34,7 @@ abstract class Repository implements RepositoryInterface
         return Validator::make($data, $model::rules($method))->validate();
     }
 
-    protected function setFilters(): void
+    protected function setFilter(): void
     {
         $this->filter = $this->validate(request()->filter(), 'filter');
 
@@ -59,15 +50,15 @@ abstract class Repository implements RepositoryInterface
 
     public function show($id): EntityModel
     {
-        $model = $this->model->findOrFail($id);
-//        $this->addRelations($dataSet);
-
-        return $model;
+        $this->setExpectedRelations();
+        return $this->model->findOrFail($id);
     }
 
     public function index(): Arrayable
     {
-        $this->setFilters();
+        $this->setFilter();
+        $this->setSort();
+        $this->setExpectedRelations();
 
         if (request()->page('all') === true) {
             $collection = $this->model->get();
@@ -76,8 +67,6 @@ abstract class Repository implements RepositoryInterface
                 ->paginate(request()->page('size'), ['*'], 'page[number]', request()->page('number'))
                 ->withPath(request()->fullUrlWithQuery(request()->except('page.number')));
         }
-
-//        $this->addRelations($collection);
 
         return $collection;
 
@@ -120,7 +109,9 @@ abstract class Repository implements RepositoryInterface
             $model->fill($attributes)->save();
 
             DB::commit();
+
         } catch (Exception $e) {
+
             DB::rollBack();
 
             // TODO: действия при rollback
@@ -161,6 +152,47 @@ abstract class Repository implements RepositoryInterface
     public function restore($id): ?bool
     {
 
-        return $this->model->onlyTrashed()->findOrFail($id)->restore();
+        DB::beginTransaction();
+
+        try {
+
+            $result = $this->model->onlyTrashed()->findOrFail($id)->restore();
+            DB::commit();
+
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            // TODO: действия при rollback
+
+            throw $e;
+        }
+
+        return $result;
+    }
+
+    // TODO: нужна проверка полей
+    protected function setSort(): void
+    {
+//        $this->sort = $this->validate(request()->sort(), 'sort');
+
+        $sort = collect(request()->sort())->mapWithKeys(function (string $field) {
+            if ($field[0] === '-') {
+                return [substr($field, 1) => 'desc'];
+            } else {
+                return [$field => 'asc'];
+            }
+        })->toArray();
+
+        foreach ($sort as $field => $direction) {
+            $this->model = $this->model->orderBy($field, $direction);
+        }
+    }
+
+    protected function setExpectedRelations(): void
+    {
+        $with = $this->model->getModel()->getWith();
+        $without = array_diff($with, request()->fields() ?? $with);
+        $this->model = $this->model->without($without);
     }
 }

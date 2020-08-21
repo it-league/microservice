@@ -33,6 +33,9 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->app['request']->macro('page', function (?string $field = null) {
             return RequestQuery::instance()->page($field);
         });
+        $this->app['request']->macro('sort', function () {
+            return RequestQuery::instance()->sort();
+        });
         $this->app['request']->macro('filter', function (?string $field = null) {
             return RequestQuery::instance()->filter($field);
         });
@@ -42,8 +45,8 @@ class MicroserviceServiceProvider extends ServiceProvider
 
         $this->commands([LanguageTableCreate::class]);
 
-        app()->middleware([
-            LocalizationMiddleware::class
-        ]);
+//        app()->middleware([
+//            LocalizationMiddleware::class
+//        ]);
     }
 }
