@@ -60,5 +60,10 @@ class MicroserviceServiceProvider extends ServiceProvider
             $this->uuid('created_by');
             $this->uuid('updated_by');
         });
+        Blueprint::macro('foreignLanguageId', function () {
+            $this->unsignedTinyInteger('language_id');
+            $this->foreign('language_id')->references('id')->on('languages')->onDelete('restrict');
+        });
+
     }
 }
