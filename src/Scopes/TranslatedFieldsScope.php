@@ -2,7 +2,6 @@
 
 namespace itleague\microservice\Scopes;
 
-use itleague\microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -20,13 +19,11 @@ class TranslatedFieldsScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $locale = app()->getLocale();
-        $repository = app(LanguageRepositoryInterface::class);
-        $defaultLanguage = $repository->default();
-        $builder->join($defaultLanguage->getTable(), $model->getTable() . '.language_id', '=', $defaultLanguage->getTable() . '.id');
-        $builder->where($defaultLanguage->getTable() . '.code', app()->getLocale());
+        $builder->join(language(true)->getTable(), $model->getTable() . '.language_id', '=', language(true)->getTable() . '.id');
+        $builder->where(language(true)->getTable() . '.code', app()->getLocale());
 
-        if ($locale !== $defaultLanguage->code) {
-            $builder->orWhere($defaultLanguage->getTable() . '.code', $defaultLanguage->code)->orderBy($defaultLanguage->getTable() . '.default', 'asc');
+        if ($locale !== language(true)->code) {
+            $builder->orWhere(language(true)->getTable() . '.code', language(true)->code)->orderBy(language(true)->getTable() . '.default', 'asc');
         }
     }
 }

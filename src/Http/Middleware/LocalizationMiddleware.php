@@ -17,8 +17,7 @@ class LocalizationMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $repository = app(LanguageRepositoryInterface::class);
-        $local = $request->hasHeader('x-localization') ? $request->header('x-localization') : $repository->default()->code;
+        $local = $request->hasHeader('x-localization') ? $request->header('x-localization') : language(true)->code;
         app()->setLocale($local);
         return $next($request);
     }
