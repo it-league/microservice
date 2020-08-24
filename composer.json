@@ -14,9 +14,7 @@
         "ext-json": "*",
         "illuminate/redis": "^7.21",
         "laravel/lumen-framework": "^7.0",
-        "predis/predis": "^1.1"
-    },
-    "require-dev": {
+        "predis/predis": "^1.1",
         "barryvdh/laravel-ide-helper": "^2.7",
         "flipbox/lumen-generator": "^7.0"
     },
