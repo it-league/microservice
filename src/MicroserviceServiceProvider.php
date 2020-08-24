@@ -24,9 +24,10 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        app()->middleware([RedisServiceProvider::class]);
+        app()->register(RedisServiceProvider::class);
         if (config('app.debug') === true) {
-            app()->middleware([LumenGeneratorServiceProvider::class, IdeHelperServiceProvider::class]);
+            app()->register(IdeHelperServiceProvider::class);
+            app()->register(LumenGeneratorServiceProvider::class);
         }
 
         /* Подключение репозитория для работы с языками */
