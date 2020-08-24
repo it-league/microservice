@@ -2,7 +2,10 @@
 
 namespace itleague\microservice;
 
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use itleague\microservice\Console\Commands\LanguageTableCreate;
 use itleague\microservice\Http\Helpers\RequestQuery;
@@ -21,6 +24,11 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        app()->middleware([RedisServiceProvider::class]);
+        if (config('app.debug') === true) {
+            app()->middleware([LumenGeneratorServiceProvider::class, IdeHelperServiceProvider::class]);
+        }
+
         /* Подключение репозитория для работы с языками */
         $this->app->singleton(LanguageRepositoryInterface::class, function () {
             $baseRepo = new LanguageRepository(new Language);
