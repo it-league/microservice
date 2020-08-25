@@ -37,7 +37,7 @@ trait CompositePrimaryModel
      *
      * @return mixed
      */
-    protected function getKeyForSaveQuery(?string $keyName)
+    protected function getKeyForSaveQuery(?string $keyName = null)
     {
         if (is_null($keyName)) {
             $keyName = $this->getKeyName();
