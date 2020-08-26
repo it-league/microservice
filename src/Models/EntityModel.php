@@ -13,7 +13,6 @@ abstract class EntityModel extends Model
     private static array $staticClassesRules;
     protected static array $rules;
 
-
     // TODO: попробовать доработать
     private const rulesValidator = [
         'store' => 'filled|array',
@@ -29,6 +28,7 @@ abstract class EntityModel extends Model
         'filter.*.*' => 'required',
     ];
 
+    protected array $eagerLoad = [];
     protected array $unfilled = [];
 
     protected static function booted()
@@ -64,8 +64,16 @@ abstract class EntityModel extends Model
         return $result;
     }
 
-    public function getWith(): array
+    /**
+     * @return array
+     */
+    public function getEagerLoads(): array
     {
-        return $this->with;
+        return $this->eagerLoad;
+    }
+
+    public function validate(array $data, string $method): array
+    {
+        return Validator::make($data, $this::rules($method))->validate();
     }
 }

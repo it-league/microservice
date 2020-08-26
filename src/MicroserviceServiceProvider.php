@@ -4,11 +4,15 @@ namespace itleague\microservice;
 
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use itleague\microservice\Console\Commands\LanguageTableCreate;
-use itleague\microservice\Http\Helpers\RequestQuery;
+use itleague\microservice\Mixins\BlueprintMixin;
+use itleague\microservice\Mixins\BuilderMixin;
+use itleague\microservice\Mixins\RequestMixin;
 use itleague\microservice\Models\Language;
 use itleague\microservice\Repositories\Decorators\LanguageCachingRepository;
 use itleague\microservice\Repositories\Interfaces\LanguageRepositoryInterface;
@@ -21,6 +25,7 @@ class MicroserviceServiceProvider extends ServiceProvider
      * Register any application services.
      *
      * @return void
+     * @throws \ReflectionException
      */
     public function register(): void
     {
@@ -41,38 +46,11 @@ class MicroserviceServiceProvider extends ServiceProvider
             return new Validator($translator, $data, $rules, $messages);
         });
 
-        /* Расширение хэлпера request() для возврата полей filter, sort, fields и page */
-        $this->app['request']->macro('page', function (?string $field = null) {
-            return RequestQuery::instance()->page($field);
-        });
-        $this->app['request']->macro('sort', function () {
-            return RequestQuery::instance()->sort();
-        });
-        $this->app['request']->macro('filter', function (?string $field = null) {
-            return RequestQuery::instance()->filter($field);
-        });
-        $this->app['request']->macro('fields', function () {
-            return RequestQuery::instance()->fields();
-        });
-
         /* Команда artisan создания миграции для таблицы языков */
         $this->commands([LanguageTableCreate::class]);
 
-        /* Доп. методы для миграций */
-        Blueprint::macro('softDeletesWithUserFields', function () {
-            $this->softDeletes();
-            $this->uuid('deleted_by')->nullable();
-        });
-        Blueprint::macro('timestampsWithUserFields', function () {
-            $this->timestamp('created_at')->useCurrent();
-            $this->timestamp('updated_at')->useCurrent();
-            $this->uuid('created_by');
-            $this->uuid('updated_by');
-        });
-        Blueprint::macro('foreignLanguageId', function () {
-            $this->unsignedTinyInteger('language_id');
-            $this->foreign('language_id')->references('id')->on('languages')->onDelete('restrict');
-        });
-
+        Request::mixin(new RequestMixin());
+        Blueprint::mixin(new BlueprintMixin());
+        Builder::mixin(new BuilderMixin());
     }
 }

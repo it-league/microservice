@@ -3,7 +3,6 @@
 namespace itleague\microservice\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
 use itleague\microservice\Repositories\Interfaces\RepositoryInterface;
 use itleague\microservice\Traits\ApiResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -16,10 +15,11 @@ abstract class Controller extends BaseController
      * @var \itleague\microservice\Repositories\Interfaces\RepositoryInterface
      */
     protected RepositoryInterface $repository;
+
     /**
      * @var \Illuminate\Http\Resources\Json\JsonResource
      */
-    protected JsonResource $resource;
+    protected $resource;
 
     public function show($id): JsonResponse
     {
