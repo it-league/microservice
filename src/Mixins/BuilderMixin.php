@@ -7,7 +7,7 @@ namespace ITLeague\Microservice\Mixins;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 
-
+/** @mixin Builder */
 class BuilderMixin
 {
 
@@ -15,7 +15,6 @@ class BuilderMixin
     {
         return function () {
 
-            /** @var Builder $this */
             $model = $this->getModel();
             $filter = $model->validate(request()->filter(), 'filter');
 
@@ -28,7 +27,11 @@ class BuilderMixin
                 $this->whereKey($keyValue);
             }
 
-            // TODO: добавить возможность доп. фильтров
+            foreach ($model->getFilters() as $key => $closure) {
+                if ($closure instanceof \Closure && isset($filter[$key])) {
+                    $closure($this, $filter[$key]);
+                }
+            }
 
             return $this;
         };
@@ -50,7 +53,6 @@ class BuilderMixin
                 }
             })->toArray();
 
-            /** @var Builder $this */
             foreach ($sort as $field => $direction) {
                 $this->orderBy($field, $direction);
             }
@@ -64,7 +66,6 @@ class BuilderMixin
     public function withRelations()
     {
         return function () {
-            /** @var Builder $this */
             $with = $this->getModel()->getEagerLoads();
             $with = array_intersect($with, request()->fields() ?? $with);
             return $this->with($with);
@@ -75,7 +76,6 @@ class BuilderMixin
     {
         return function () {
 
-            /** @var Builder $this */
             return $this->paginate(request()->page('size'), ['*'], 'page[number]', request()->page('number'))
                 ->withPath(request()->fullUrlWithQuery(request()->except('page.number')));
         };

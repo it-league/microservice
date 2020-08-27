@@ -6,6 +6,7 @@ namespace ITLeague\Microservice\Mixins;
 
 use Illuminate\Support\Arr;
 
+/** @mixin \Illuminate\Http\Request */
 class RequestMixin
 {
     private array $cache = [];

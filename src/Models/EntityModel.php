@@ -30,6 +30,7 @@ abstract class EntityModel extends Model
 
     protected array $eagerLoad = [];
     protected array $unfilled = [];
+    protected array $filters = [];
 
     protected static function booted()
     {
@@ -75,5 +76,13 @@ abstract class EntityModel extends Model
     public function validate(array $data, string $method): array
     {
         return Validator::make($data, $this::rules($method))->validate();
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 }
