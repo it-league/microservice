@@ -1,10 +1,10 @@
 <?php
 
-namespace itleague\microservice\Http\Controllers;
+namespace ITLeague\Microservice\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use itleague\microservice\Repositories\Interfaces\RepositoryInterface;
-use itleague\microservice\Traits\ApiResponse;
+use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
+use ITLeague\Microservice\Traits\ApiResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 abstract class Controller extends BaseController
@@ -12,7 +12,7 @@ abstract class Controller extends BaseController
     use ApiResponse;
 
     /**
-     * @var \itleague\microservice\Repositories\Interfaces\RepositoryInterface
+     * @var \ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface
      */
     protected RepositoryInterface $repository;
 

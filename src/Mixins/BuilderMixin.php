@@ -1,14 +1,16 @@
 <?php
 
 
-namespace itleague\microservice\Mixins;
+namespace ITLeague\Microservice\Mixins;
 
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 
+
 class BuilderMixin
 {
+
     public function withFilter()
     {
         return function () {

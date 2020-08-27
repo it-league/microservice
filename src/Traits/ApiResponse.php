@@ -1,6 +1,6 @@
 <?php
 
-namespace itleague\microservice\Traits;
+namespace ITLeague\Microservice\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

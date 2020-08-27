@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Mixins;
+namespace ITLeague\Microservice\Mixins;
 
 
 use Illuminate\Database\Schema\Blueprint;

@@ -1,8 +1,8 @@
 <?php
 
-namespace itleague\microservice\Http\Middleware;
+namespace ITLeague\Microservice\Http\Middleware;
 
-use itleague\microservice\Repositories\Interfaces\LanguageRepositoryInterface;
+use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use Closure;
 
 class LocalizationMiddleware

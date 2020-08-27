@@ -1,11 +1,11 @@
 <?php
 
 
-namespace itleague\microservice\Repositories\Decorators;
+namespace ITLeague\Microservice\Repositories\Decorators;
 
 
-use itleague\microservice\Models\Language;
-use itleague\microservice\Repositories\Interfaces\LanguageRepositoryInterface;
+use ITLeague\Microservice\Models\Language;
+use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Cache;
 

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace itleague\microservice\Traits;
+namespace ITLeague\Microservice\Traits;
 
 
-use itleague\microservice\Scopes\TranslatedFieldsScope;
+use ITLeague\Microservice\Scopes\TranslatedFieldsScope;
 
 trait ModelForTranslatedFields
 {

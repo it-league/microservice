@@ -1,9 +1,9 @@
 <?php
 
 
-namespace itleague\microservice\Repositories\Interfaces;
+namespace ITLeague\Microservice\Repositories\Interfaces;
 
-use itleague\microservice\Models\EntityModel;
+use ITLeague\Microservice\Models\EntityModel;
 use Illuminate\Contracts\Support\Arrayable;
 
 interface RepositoryInterface

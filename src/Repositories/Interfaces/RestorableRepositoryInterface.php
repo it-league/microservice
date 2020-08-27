@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Repositories\Interfaces;
+namespace ITLeague\Microservice\Repositories\Interfaces;
 
 
 interface RestorableRepositoryInterface

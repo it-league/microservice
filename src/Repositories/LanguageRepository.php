@@ -1,11 +1,11 @@
 <?php
 
 
-namespace itleague\microservice\Repositories;
+namespace ITLeague\Microservice\Repositories;
 
 
-use itleague\microservice\Models\Language;
-use itleague\microservice\Repositories\Interfaces\LanguageRepositoryInterface;
+use ITLeague\Microservice\Models\Language;
+use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class LanguageRepository implements LanguageRepositoryInterface

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Console\Commands;
+namespace ITLeague\Microservice\Console\Commands;
 
 
 use Illuminate\Console\Command;

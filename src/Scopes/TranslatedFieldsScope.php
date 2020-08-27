@@ -1,6 +1,6 @@
 <?php
 
-namespace itleague\microservice\Scopes;
+namespace ITLeague\Microservice\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

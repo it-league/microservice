@@ -1,6 +1,6 @@
 <?php
 
-namespace itleague\microservice;
+namespace ITLeague\Microservice;
 
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
@@ -9,15 +9,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Support\ServiceProvider;
-use itleague\microservice\Console\Commands\LanguageTableCreate;
-use itleague\microservice\Mixins\BlueprintMixin;
-use itleague\microservice\Mixins\BuilderMixin;
-use itleague\microservice\Mixins\RequestMixin;
-use itleague\microservice\Models\Language;
-use itleague\microservice\Repositories\Decorators\LanguageCachingRepository;
-use itleague\microservice\Repositories\Interfaces\LanguageRepositoryInterface;
-use itleague\microservice\Repositories\LanguageRepository;
-use itleague\microservice\Validators\Validator;
+use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
+use ITLeague\Microservice\Mixins\BlueprintMixin;
+use ITLeague\Microservice\Mixins\BuilderMixin;
+use ITLeague\Microservice\Mixins\RequestMixin;
+use ITLeague\Microservice\Models\Language;
+use ITLeague\Microservice\Repositories\Decorators\LanguageCachingRepository;
+use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
+use ITLeague\Microservice\Repositories\LanguageRepository;
+use ITLeague\Microservice\Validators\Validator;
 
 class MicroserviceServiceProvider extends ServiceProvider
 {

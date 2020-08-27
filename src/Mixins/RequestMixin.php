@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Mixins;
+namespace ITLeague\Microservice\Mixins;
 
 
 use Illuminate\Support\Arr;
@@ -52,9 +52,6 @@ class RequestMixin
         };
     }
 
-    /**
-     * @return array|string
-     */
     public function page()
     {
         return function (?string $field = null) {
@@ -84,9 +81,6 @@ class RequestMixin
         };
     }
 
-    /**
-     * @return array|string
-     */
     public function filter()
     {
         return function (?string $field = null) {

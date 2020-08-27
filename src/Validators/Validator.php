@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Validators;
+namespace ITLeague\Microservice\Validators;
 
 
 use Illuminate\Contracts\Translation\Translator;

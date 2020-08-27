@@ -1,12 +1,12 @@
 <?php
 
-namespace itleague\microservice\Models;
+namespace ITLeague\Microservice\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * itleague\microservice\Http\Models\Language
+ * ITLeague\Microservice\Http\Models\Language
  *
  * @property int $id
  * @property string $code

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Traits;
+namespace ITLeague\Microservice\Traits;
 
 
 use Illuminate\Database\Eloquent\Relations\HasOne;

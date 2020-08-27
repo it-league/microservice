@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Http\Helpers;
+namespace ITLeague\Microservice\Http\Helpers;
 
 
 class DB

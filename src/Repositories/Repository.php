@@ -1,15 +1,15 @@
 <?php
 
 
-namespace itleague\microservice\Repositories;
+namespace ITLeague\Microservice\Repositories;
 
 
 use DB;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
-use itleague\microservice\Models\EntityModel;
-use itleague\microservice\Repositories\Interfaces\RepositoryInterface;
+use ITLeague\Microservice\Models\EntityModel;
+use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 
 abstract class Repository implements RepositoryInterface
 {

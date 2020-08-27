@@ -1,7 +1,7 @@
 <?php
 
 
-namespace itleague\microservice\Models;
+namespace ITLeague\Microservice\Models;
 
 
 use Illuminate\Database\Eloquent\Model;

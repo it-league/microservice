@@ -1,11 +1,11 @@
 <?php
 
 
-namespace itleague\microservice\Repositories\Decorators;
+namespace ITLeague\Microservice\Repositories\Decorators;
 
 
-use itleague\microservice\Models\EntityModel;
-use itleague\microservice\Repositories\Interfaces\RepositoryInterface;
+use ITLeague\Microservice\Models\EntityModel;
+use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Cache;
