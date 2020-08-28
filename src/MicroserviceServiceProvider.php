@@ -4,16 +4,19 @@ namespace ITLeague\Microservice;
 
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
+use ITLeague\Microservice\Exceptions\Handler;
 use ITLeague\Microservice\Mixins\BlueprintMixin;
 use ITLeague\Microservice\Mixins\BuilderMixin;
 use ITLeague\Microservice\Mixins\RequestMixin;
 use ITLeague\Microservice\Models\Language;
+use ITLeague\Microservice\Models\User;
 use ITLeague\Microservice\Repositories\Decorators\LanguageCachingRepository;
 use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use ITLeague\Microservice\Repositories\LanguageRepository;
@@ -49,8 +52,29 @@ class MicroserviceServiceProvider extends ServiceProvider
         /* Команда artisan создания миграции для таблицы языков */
         $this->commands([LanguageTableCreate::class]);
 
+        /* Обработчик ошибок */
+        $this->app->singleton(
+            ExceptionHandler::class,
+            Handler::class
+        );
+
+        /* Расширения для фасадов */
         Request::mixin(new RequestMixin());
         Blueprint::mixin(new BlueprintMixin());
         Builder::mixin(new BuilderMixin());
+    }
+
+    public function boot()
+    {
+        $this->app['auth']->viaRequest('api', function ($request) {
+            if (! $request->hasHeader('x-authenticated-userid')) {
+                return null;
+            }
+
+            return new User([
+                'id' => $request->header('x-authenticated-userid'),
+                'scope' => explode(' ', $request->header('x-authenticated-scope')),
+            ]);
+        });
     }
 }

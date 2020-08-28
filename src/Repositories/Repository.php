@@ -19,7 +19,7 @@ abstract class Repository implements RepositoryInterface
     public function __construct(EntityModel $model)
     {
         $this->model = $model;
-        $this->query = $model->newModelQuery();
+        $this->query = $model->newQuery();
     }
 
 
@@ -42,7 +42,7 @@ abstract class Repository implements RepositoryInterface
 
         try {
 
-            $model = new $this->query($attributes);
+            $model = new $this->model($attributes);
             $model->save();
 
             DB::commit();

@@ -75,7 +75,7 @@ abstract class EntityModel extends Model
 
     public function validate(array $data, string $method): array
     {
-        return Validator::make($data, $this::rules($method))->validate();
+        return Validator::make($data, self::rules($method))->validate();
     }
 
     /**

@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 trait TranslatableModel
 {
+
+    public static function bootTranslatableModel(): void
+    {
+        static::saved(function (self $model) {
+            $model->setTranslation($model->unfilled);
+        });
+    }
+
     public function initializeTranslatableModel(): void
     {
         $this->with[] = 'translation';
