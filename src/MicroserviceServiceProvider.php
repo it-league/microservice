@@ -4,6 +4,7 @@ namespace ITLeague\Microservice;
 
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
+use Gate;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
@@ -32,6 +33,9 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $configPath = __DIR__ . '/../config/microservice.php';
+        $this->mergeConfigFrom($configPath, 'microservice');
+
         app()->register(RedisServiceProvider::class);
         if (config('app.debug') === true) {
             app()->register(IdeHelperServiceProvider::class);
@@ -62,6 +66,17 @@ class MicroserviceServiceProvider extends ServiceProvider
         Request::mixin(new RequestMixin());
         Blueprint::mixin(new BlueprintMixin());
         Builder::mixin(new BuilderMixin());
+
+        /* Права доступа по-умолчанию */
+        Gate::before(function (User $user, string $ability) {
+            if ($user->isSuperAdmin()) {
+                return true;
+            }
+            return null;
+        });
+        Gate::define('admin', function (User $user) {
+            return $user->isAdmin();
+        });
     }
 
     public function boot()

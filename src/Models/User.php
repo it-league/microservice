@@ -20,6 +20,11 @@ class User extends GenericUser
 
     public function isAdmin(): bool
     {
+        return $this->hasScope('admin') || $this->hasScope('super-admin');
+    }
+
+    public function isSuperAdmin(): bool
+    {
         return $this->hasScope('super-admin');
     }
 }
