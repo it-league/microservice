@@ -4,15 +4,18 @@
 namespace ITLeague\Microservice\Casts;
 
 
+use Auth;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 abstract class File implements CastsAttributes
 {
-    protected array $permissions = [
+    protected array $permission = [
         'hideAll' => true
     ];
 
@@ -26,6 +29,7 @@ abstract class File implements CastsAttributes
         return $value;
     }
 
+
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
      * @param string $key
@@ -33,39 +37,47 @@ abstract class File implements CastsAttributes
      * @param array $attributes
      *
      * @return array|mixed|string
-     * @throws \Illuminate\Http\Client\RequestException
+     * @throws \GuzzleHttp\Exception\GuzzleException|\Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
     public function set($model, string $key, $value, array $attributes)
     {
-        // confirm new file
-        if ($value && $this->force === false) {
-            $response = Http::put(config('microservice.storage_uri') . '/confirm/' . $value, ['permissions' => $this->permissions, 'sizes' => $this->sizes]);
-            static::checkResponse($response, 204);
+
+        if (Auth::check() !== true) {
+            throw new AuthorizationException('Can`t save file without authorization');
         }
 
-        // delete old file
-        if ($attributes[$key]) {
-            $response = Http::delete(config('microservice.storage_uri') . '/delete/' . $attributes[$key]);
-            static::checkResponse($response, 204);
+        $http = new Client([
+            'base_uri' => config('microservice.storage_uri'),
+            'headers' => [
+                'x-authenticated-userid' => Auth::id(),
+                'x-authenticated-scopes' => implode(' ', Auth::user()->scope),
+            ]
+        ]);
+
+        try {
+
+            // confirm new file
+            if ($value && $this->force === false) {
+                $http->put('confirm/' . $value, [
+                    'json' => ['permission' => $this->permission, 'sizes' => $this->sizes]
+                ]);
+            }
+
+            // delete old file
+            if (Arr::has($attributes, $key) && Str::length($attributes[$key]) === 36) {
+                $http->delete('delete/' . $attributes[$key]);
+            }
+
+        } catch (RequestException $e) {
+
+            if ($content = json_decode($e->getResponse()->getBody(), true)) {
+                throw new Exception($content['error']['detail'], $content['error']['status']);
+            } else {
+                throw new Exception();
+            }
         }
 
         return $value;
-    }
-
-    /**
-     * @param \Illuminate\Http\Client\Response $response
-     * @param int $success
-     *
-     * @throws \Illuminate\Http\Client\RequestException
-     * @throws \Exception
-     */
-    private static function checkResponse(Response $response, int $success = 200) {
-        if ($response->status() !== $success) {
-            if ($content = json_decode($response->body(), true)) {
-                throw new Exception($content['error']['detail'], $content['error']['code']);
-            } else {
-                throw new RequestException($response);
-            }
-        }
     }
 }
