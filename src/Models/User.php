@@ -15,7 +15,7 @@ class User extends GenericUser
 {
     public function hasScope($scope): bool
     {
-        return collect($this->scope)->contains($scope);
+        return collect($this->scope ?? [])->contains($scope);
     }
 
     public function isAdmin(): bool

@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use ITLeague\Microservice\Traits\ApiResponse;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use League\Flysystem\FileNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -78,7 +79,7 @@ class Handler extends ExceptionHandler
             $code = Response::HTTP_UNAUTHORIZED;
         } elseif ($exception instanceof AuthorizationException) {
             $code = Response::HTTP_FORBIDDEN;
-        } elseif ($exception instanceof ModelNotFoundException) {
+        } elseif ($exception instanceof ModelNotFoundException || $exception instanceof FileNotFoundException) {
             $code = Response::HTTP_NOT_FOUND;
             $detail = 'Entity not found!';
         } elseif ($exception instanceof NotFoundHttpException) {
