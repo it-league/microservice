@@ -49,8 +49,8 @@ abstract class File implements CastsAttributes
 
         $http = Http::withHeaders([
             'x-authenticated-userid' => Auth::id(),
-            'x-authenticated-scopes' => implode(' ', (array)Auth::user()->scope),
-        ])->baseUrl(config('microservice.storage_uri'));
+            'x-authenticated-scope' => implode(' ', (array)Auth::user()->scope),
+        ])->baseUrl(config('microservice.storage_uri'))->withoutVerifying();
 
         try {
 
