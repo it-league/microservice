@@ -3,17 +3,15 @@
 namespace ITLeague\Microservice\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
+use ITLeague\Microservice\Http\Interfaces\ResourceControllerInterface;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 use ITLeague\Microservice\Traits\ApiResponse;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
-abstract class Controller extends BaseController
+abstract class ResourceController extends BaseController implements ResourceControllerInterface
 {
     use ApiResponse;
 
-    /**
-     * @var \ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface
-     */
     protected RepositoryInterface $repository;
 
     /**
@@ -48,12 +46,6 @@ abstract class Controller extends BaseController
     public function destroy($id): JsonResponse
     {
         $this->repository->destroy($id);
-        return $this->respondNull();
-    }
-
-    public function restore($id): JsonResponse
-    {
-        $this->repository->restore($id);
         return $this->respondNull();
     }
 

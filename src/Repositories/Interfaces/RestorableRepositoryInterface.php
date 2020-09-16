@@ -4,7 +4,7 @@
 namespace ITLeague\Microservice\Repositories\Interfaces;
 
 
-interface RestorableRepositoryInterface
+interface RestorableRepositoryInterface extends RepositoryInterface
 {
     public function restore($id): ?bool;
 }

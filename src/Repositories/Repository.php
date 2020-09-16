@@ -110,26 +110,4 @@ abstract class Repository implements RepositoryInterface
 
         return $result;
     }
-
-    public function restore($id): ?bool
-    {
-
-        DB::beginTransaction();
-
-        try {
-
-            $result = $this->query->onlyTrashed()->findOrFail($id)->restore();
-            DB::commit();
-
-        } catch (Exception $e) {
-
-            DB::rollBack();
-
-            // TODO: действия при rollback
-
-            throw $e;
-        }
-
-        return $result;
-    }
 }

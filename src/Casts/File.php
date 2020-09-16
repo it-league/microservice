@@ -6,9 +6,9 @@ namespace ITLeague\Microservice\Casts;
 
 use Auth;
 use Exception;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -37,7 +37,7 @@ abstract class File implements CastsAttributes
      * @param array $attributes
      *
      * @return array|mixed|string
-     * @throws \GuzzleHttp\Exception\GuzzleException|\Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
     public function set($model, string $key, $value, array $attributes)
@@ -67,9 +67,9 @@ abstract class File implements CastsAttributes
         } catch (RequestException $e) {
 
             if ($content = json_decode($e->response->body(), true)) {
-                throw new Exception($content['error']['detail'], $content['error']['status']);
+                throw new Exception('Storage service error: ' . $content['error']['detail'], $content['error']['status']);
             } else {
-                throw new Exception();
+                throw new Exception('Storage service error: ' . $e->getMessage(), 500);
             }
         }
 
