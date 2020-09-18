@@ -4,8 +4,10 @@
 namespace ITLeague\Microservice\Models;
 
 
+use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Opis\Closure\SerializableClosure;
 use Validator;
 
 abstract class EntityModel extends Model
@@ -31,6 +33,28 @@ abstract class EntityModel extends Model
     protected array $eagerLoad = [];
     protected array $unfilled = [];
     protected array $filters = [];
+
+    public function __sleep()
+    {
+        foreach ($this->filters as &$filter) {
+            if ($filter instanceof Closure) {
+                $filter = new SerializableClosure($filter);
+            }
+        }
+
+        return parent::__sleep();
+    }
+
+    public function __wakeup()
+    {
+        foreach ($this->filters as &$filter) {
+            if ($filter instanceof SerializableClosure) {
+                $filter = $filter->getClosure();
+            }
+        }
+
+        parent::__wakeup();
+    }
 
     protected static function booted()
     {
