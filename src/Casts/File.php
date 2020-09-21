@@ -27,15 +27,19 @@ abstract class File implements CastsAttributes
     protected PendingRequest $http;
 
     protected Cache\Repository $cache;
-    protected int $ttl = 60 * 60 * 24 * 30;
+    protected int $ttl = 60 * 60 * 24 * 30; // month
 
     public function __construct()
     {
         $this->cache = app('cache.store');
-        $this->http = Http::withHeaders([
-            'x-authenticated-userid' => Auth::id(),
-            'x-authenticated-scope' => implode(' ', (array)Auth::user()->scope),
-        ])->baseUrl(config('microservice.storage_uri') . '/' . config('microservice.storage_prefix') . '/')->withoutVerifying();
+        $this->http = Http::baseUrl(config('microservice.storage_uri') . '/' . config('microservice.storage_prefix') . '/')->withoutVerifying();
+
+        if (Auth::check() === true) {
+            $this->http = $this->http->withHeaders([
+                'x-authenticated-userid' => Auth::id(),
+                'x-authenticated-scope' => trim(implode(' ', (array)Auth::user()->scope)),
+            ]);
+        }
     }
 
     /**
@@ -49,7 +53,8 @@ abstract class File implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        return $this->cache->remember('file:' . $value, $this->ttl, function () use ($value) {
+        $hash = md5("file:$value");
+        return $this->cache->remember($hash, $this->ttl, function () use ($value) {
             return $this->getInfo($value);
         });
     }
