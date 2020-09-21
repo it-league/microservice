@@ -17,6 +17,8 @@ abstract class CachingRepository implements RepositoryInterface
     protected int $ttl = 60;
     protected string $tag = '';
 
+    protected array $relatedTags = [];
+
     public function __construct(RepositoryInterface $repository)
     {
         $this->repository = $repository;
@@ -71,6 +73,8 @@ abstract class CachingRepository implements RepositoryInterface
 
     public function flush(): void
     {
-        $this->cache->tags($this->tag)->flush();
+        $tags = array_filter($this->relatedTags);
+        array_push($tags, $this->tag);
+        $this->cache->tags($tags)->flush();
     }
 }
