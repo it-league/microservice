@@ -4,11 +4,10 @@
 namespace ITLeague\Microservice\Repositories\Decorators;
 
 
+use Illuminate\Cache;
+use Illuminate\Contracts\Support\Arrayable;
 use ITLeague\Microservice\Models\EntityModel;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Cache;
 
 abstract class CachingRepository implements RepositoryInterface
 {
