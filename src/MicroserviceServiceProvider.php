@@ -22,6 +22,8 @@ use ITLeague\Microservice\Repositories\Decorators\LanguageCachingRepository;
 use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use ITLeague\Microservice\Repositories\LanguageRepository;
 use ITLeague\Microservice\Validators\Validator;
+use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
+use LumenMiddlewareTrimOrConvertString\TrimStrings;
 
 class MicroserviceServiceProvider extends ServiceProvider
 {
@@ -91,5 +93,10 @@ class MicroserviceServiceProvider extends ServiceProvider
                 'scope' => explode(' ', $request->header('x-authenticated-scope')),
             ]);
         });
+
+        app()->middleware([
+            TrimStrings::class,
+            ConvertEmptyStringsToNull::class
+        ]);
     }
 }
