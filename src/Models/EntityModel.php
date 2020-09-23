@@ -7,6 +7,8 @@ namespace ITLeague\Microservice\Models;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use ITLeague\Microservice\Casts\File;
+use ITLeague\Microservice\Http\Helpers\Storage;
 use Opis\Closure\SerializableClosure;
 use Validator;
 
@@ -59,6 +61,17 @@ abstract class EntityModel extends Model
     protected static function booted()
     {
         parent::booted();
+
+        static::deleted(
+            function (self $model) {
+                foreach ($model->getCasts() as $key => $cast) {
+                    if ($cast === File::class || is_subclass_of($cast, File::class)) {
+                        Storage::delete($model->getOriginal($key));
+                    }
+                }
+            }
+        );
+
         static::setRules();
         static::$rules = [];
     }
