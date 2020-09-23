@@ -66,7 +66,7 @@ abstract class EntityModel extends Model
             function (self $model) {
                 foreach ($model->getCasts() as $key => $cast) {
                     if ($cast === File::class || is_subclass_of($cast, File::class)) {
-                        Storage::delete($model->getOriginal($key));
+                        Storage::delete($model->getAttributeFromArray($key));
                     }
                 }
             }
