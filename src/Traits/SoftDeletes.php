@@ -22,20 +22,24 @@ trait SoftDeletes
 
     public function initializeSoftDeletesTrait(): void
     {
-        $this->guarded = array_merge($this->guarded, ['deleted_at', 'deleted_by']);
+        $this->mergeGuarded([$this->getDeletedAtColumn(), 'deleted_by']);
     }
 
     public static function bootSoftDeletes(): void
     {
         static::parentBootSoftDeletes();
 
-        static::deleting(function (self $model) {
-            $model->deleted_by = Auth::check() ? Auth::id() : null;
-        });
+        static::deleting(
+            function (self $model) {
+                $model->deleted_by = Auth::check() ? Auth::id() : null;
+            }
+        );
 
-        static::restoring(function (self $model) {
-            $model->deleted_by = null;
-        });
+        static::restoring(
+            function (self $model) {
+                $model->deleted_by = null;
+            }
+        );
     }
 
     /**

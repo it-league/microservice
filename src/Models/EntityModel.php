@@ -4,16 +4,19 @@
 namespace ITLeague\Microservice\Models;
 
 
-use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use ITLeague\Microservice\Casts\File;
-use ITLeague\Microservice\Http\Helpers\Storage;
-use Opis\Closure\SerializableClosure;
+use ITLeague\Microservice\Observers\FileAttributeObserver;
+use ITLeague\Microservice\Traits\SerializableEntity;
 use Validator;
 
 abstract class EntityModel extends Model
 {
+    use SerializableEntity;
+
+    private array $unfilled = [];
+
     private static array $staticClassesRules;
     protected static array $rules;
 
@@ -33,44 +36,28 @@ abstract class EntityModel extends Model
     ];
 
     protected array $eagerLoad = [];
-    protected array $unfilled = [];
     protected array $filters = [];
+    protected array $files = [];
 
-    public function __sleep()
+    public function __construct(array $attributes = [])
     {
-        foreach ($this->filters as &$filter) {
-            if ($filter instanceof Closure) {
-                $filter = new SerializableClosure($filter);
-            }
+        parent::__construct($attributes);
+
+        // add cast fo file attributes
+        foreach ($this->getFiles() as $attribute => $settings) {
+            $this->mergeCasts([$attribute => File::class]);
         }
-
-        return parent::__sleep();
-    }
-
-    public function __wakeup()
-    {
-        foreach ($this->filters as &$filter) {
-            if ($filter instanceof SerializableClosure) {
-                $filter = $filter->getClosure();
-            }
-        }
-
-        parent::__wakeup();
     }
 
     protected static function booted()
     {
         parent::booted();
 
-        static::deleted(
-            function (self $model) {
-                foreach ($model->getCasts() as $key => $cast) {
-                    if ($cast === File::class || is_subclass_of($cast, File::class)) {
-                        Storage::delete($model->getAttributeFromArray($key));
-                    }
-                }
-            }
-        );
+        // add observer for file attributes
+        $instance = new static();
+        if (count($instance->getFiles()) > 0) {
+            $instance->registerObserver(FileAttributeObserver::class);
+        }
 
         static::setRules();
         static::$rules = [];
@@ -82,7 +69,7 @@ abstract class EntityModel extends Model
         static::$staticClassesRules[static::class] = $rules;
     }
 
-    public static function rules(string $method): array
+    final public static function rules(string $method): array
     {
         return Arr::get(static::$staticClassesRules, static::class . '.' . $method, []);
     }
@@ -95,7 +82,7 @@ abstract class EntityModel extends Model
      *
      * @return $this
      */
-    public function fill(array $attributes): self
+    final public function fill(array $attributes): self
     {
         $result = parent::fill($attributes);
         $this->unfilled = count($attributes) ? Arr::except($attributes, array_keys($this->attributes)) : [];
@@ -105,12 +92,12 @@ abstract class EntityModel extends Model
     /**
      * @return array
      */
-    public function getEagerLoads(): array
+    final public function getEagerLoads(): array
     {
         return $this->eagerLoad;
     }
 
-    public function validate(array $data, string $method): array
+    final public function validate(array $data, string $method): array
     {
         return Validator::make($data, self::rules($method))->validate();
     }
@@ -118,8 +105,26 @@ abstract class EntityModel extends Model
     /**
      * @return array
      */
-    public function getFilters(): array
+    final public function getFilters(): array
     {
         return $this->filters;
+    }
+
+    /**
+     * @return array
+     */
+    final public function getFiles(): array
+    {
+        return $this->files;
+    }
+
+    /**
+     * @param string $attribute
+     *
+     * @return mixed|null
+     */
+    final public function getUnfilled(string $attribute)
+    {
+        return $this->unfilled[$attribute] ?? null;
     }
 }

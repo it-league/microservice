@@ -45,15 +45,15 @@ class MicroserviceServiceProvider extends ServiceProvider
         }
 
         /* Подключение репозитория для работы с языками */
-        $this->app->singleton(LanguageRepositoryInterface::class, function () {
-            $baseRepo = new LanguageRepository(new Language);
-            return new LanguageCachingRepository($baseRepo);
-        });
+        $this->app->singleton(
+            LanguageRepositoryInterface::class,
+            fn () => new LanguageCachingRepository(new LanguageRepository(new Language()))
+        );
 
         /* Расширение штатного валидатора */
-        $this->app['validator']->resolver(function ($translator, $data, $rules, $messages) {
-            return new Validator($translator, $data, $rules, $messages);
-        });
+        $this->app['validator']->resolver(
+            fn($translator, $data, $rules, $messages) => new Validator($translator, $data, $rules, $messages)
+        );
 
         /* Команда artisan создания миграции для таблицы языков */
         $this->commands([LanguageTableCreate::class]);
@@ -70,33 +70,43 @@ class MicroserviceServiceProvider extends ServiceProvider
         Builder::mixin(new BuilderMixin());
 
         /* Права доступа по-умолчанию */
-        Gate::before(function (User $user, string $ability) {
-            if ($user->isSuperAdmin()) {
-                return true;
+        Gate::before(
+            function (User $user, string $ability) {
+                if ($user->isSuperAdmin()) {
+                    return true;
+                }
+                return null;
             }
-            return null;
-        });
-        Gate::define('admin', function (User $user) {
-            return $user->isAdmin();
-        });
+        );
+        Gate::define(
+            'admin',
+            fn(User $user) => $user->isAdmin()
+        );
     }
 
     public function boot()
     {
-        $this->app['auth']->viaRequest('api', function ($request) {
-            if (! $request->hasHeader('x-authenticated-userid')) {
-                return null;
+        $this->app['auth']->viaRequest(
+            'api',
+            function ($request) {
+                if (! $request->hasHeader('x-authenticated-userid')) {
+                    return null;
+                }
+
+                return new User(
+                    [
+                        'id' => $request->header('x-authenticated-userid'),
+                        'scope' => explode(' ', $request->header('x-authenticated-scope')),
+                    ]
+                );
             }
+        );
 
-            return new User([
-                'id' => $request->header('x-authenticated-userid'),
-                'scope' => explode(' ', $request->header('x-authenticated-scope')),
-            ]);
-        });
-
-        app()->middleware([
-            TrimStrings::class,
-            ConvertEmptyStringsToNull::class
-        ]);
+        app()->middleware(
+            [
+                TrimStrings::class,
+                ConvertEmptyStringsToNull::class
+            ]
+        );
     }
 }

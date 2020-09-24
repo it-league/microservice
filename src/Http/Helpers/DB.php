@@ -8,9 +8,11 @@ class DB
 {
     public static function createJsonToArrayFunction()
     {
-        \DB::statement('CREATE OR REPLACE FUNCTION json_to_array(_js json)
+        \DB::statement(
+            'CREATE OR REPLACE FUNCTION json_to_array(_js json)
                     RETURNS text[] LANGUAGE sql IMMUTABLE PARALLEL SAFE AS
-                \'SELECT ARRAY(SELECT json_array_elements_text(_js))\'');
+                \'SELECT ARRAY(SELECT json_array_elements_text(_js))\''
+        );
     }
 
     public static function dropJsonToArrayFunction()
@@ -20,7 +22,8 @@ class DB
 
     public static function createOnUpdateFunction()
     {
-        \DB::statement('CREATE OR REPLACE FUNCTION on_update() RETURNS TRIGGER AS $$
+        \DB::statement(
+            'CREATE OR REPLACE FUNCTION on_update() RETURNS TRIGGER AS $$
             BEGIN
                 IF row (NEW.*) IS DISTINCT FROM row (OLD.*) THEN
                     NEW.created_at = OLD.created_at;
@@ -48,18 +51,21 @@ class DB
                     RETURN OLD;
                 END IF;
             END;
-            $$ language \'plpgsql\';');
+            $$ language \'plpgsql\';'
+        );
     }
 
     public static function createImmutablePrimaryFunction(string $tableName, string $primaryKey)
     {
-        \DB::statement('CREATE OR REPLACE FUNCTION immutable_primary_on_' . $tableName . '_update()
+        \DB::statement(
+            'CREATE OR REPLACE FUNCTION immutable_primary_on_' . $tableName . '_update()
             RETURNS TRIGGER AS $$
             BEGIN
                 NEW.' . $primaryKey . ' = OLD.' . $primaryKey . ';
                 RETURN NEW;
             END;
-            $$ language \'plpgsql\'');
+            $$ language \'plpgsql\''
+        );
     }
 
     public static function setImmutablePrimary(string $tableName, string $primaryKey = 'id')
@@ -71,7 +77,9 @@ class DB
     public static function createImmutablePrimaryTrigger(string $tableName)
     {
         self::dropImmutablePrimaryTrigger($tableName);
-        \DB::statement('CREATE TRIGGER immutable_primary BEFORE UPDATE ON ' . $tableName . ' FOR EACH ROW EXECUTE FUNCTION immutable_primary_on_' . $tableName . '_update()');
+        \DB::statement(
+            'CREATE TRIGGER immutable_primary BEFORE UPDATE ON ' . $tableName . ' FOR EACH ROW EXECUTE FUNCTION immutable_primary_on_' . $tableName . '_update()'
+        );
     }
 
     public static function dropImmutablePrimaryTrigger(string $tableName)
@@ -86,7 +94,8 @@ class DB
 
     public static function createOnInsertFunction()
     {
-        \DB::statement('CREATE OR REPLACE FUNCTION on_insert()
+        \DB::statement(
+            'CREATE OR REPLACE FUNCTION on_insert()
             RETURNS TRIGGER AS $$
             BEGIN
                 NEW.created_at = CURRENT_TIMESTAMP;
@@ -97,22 +106,26 @@ class DB
                 NEW.deleted_by = NULL;
                 RETURN NEW;
             END;
-            $$ language \'plpgsql\';');
+            $$ language \'plpgsql\';'
+        );
     }
 
     public static function createOnDeleteFunction()
     {
-        \DB::statement('CREATE OR REPLACE FUNCTION on_delete()
+        \DB::statement(
+            'CREATE OR REPLACE FUNCTION on_delete()
             RETURNS TRIGGER AS $$
             BEGIN
                 RAISE EXCEPTION \'Impossible to delete row! Use soft delete.\' USING ERRCODE = \'23001\';
             END;
-            $$ language \'plpgsql\';');
+            $$ language \'plpgsql\';'
+        );
     }
 
     public static function createOnUpdateOrInsertRelationshipFunction(string $dataTableName, string $relationshipTableName, string $dataKey, string $foreignKey)
     {
-        \DB::statement('CREATE OR REPLACE FUNCTION on_' . $relationshipTableName . '_update_or_insert()
+        \DB::statement(
+            'CREATE OR REPLACE FUNCTION on_' . $relationshipTableName . '_update_or_insert()
                 RETURNS TRIGGER AS $$
                 BEGIN
                    IF row(NEW.*) IS DISTINCT FROM row(OLD.*) THEN
@@ -120,7 +133,8 @@ class DB
                    END IF;
                    RETURN NEW;
                 END;
-                $$ language \'plpgsql\';');
+                $$ language \'plpgsql\';'
+        );
     }
 
     public static function dropOnUpdateFunction()
@@ -164,7 +178,9 @@ class DB
     public static function createOnUpdateOrInsertRelationshipTrigger(string $relationshipTableName)
     {
         self::dropOnUpdateRelationshipTrigger($relationshipTableName);
-        \DB::statement('CREATE TRIGGER on_update_or_insert_table AFTER UPDATE OR INSERT ON ' . $relationshipTableName . ' FOR EACH ROW EXECUTE FUNCTION on_' . $relationshipTableName . '_update_or_insert();');
+        \DB::statement(
+            'CREATE TRIGGER on_update_or_insert_table AFTER UPDATE OR INSERT ON ' . $relationshipTableName . ' FOR EACH ROW EXECUTE FUNCTION on_' . $relationshipTableName . '_update_or_insert();'
+        );
     }
 
     public static function dropOnUpdateTrigger(string $tableName)

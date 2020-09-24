@@ -30,7 +30,7 @@ class Language extends Model
     public $timestamps = false;
     protected $guarded = ['id'];
 
-    public function scopeDefault(Builder $query): Builder
+    final public function scopeDefault(Builder $query): Builder
     {
         return $query->whereDefault(true)->limit(1);
     }

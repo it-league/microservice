@@ -11,8 +11,8 @@ use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 
 abstract class CachingRepository implements RepositoryInterface
 {
-    protected RepositoryInterface $repository;
-    protected Cache\Repository $cache;
+    private RepositoryInterface $repository;
+    private Cache\Repository $cache;
 
     protected int $ttl = 60;
     protected string $tag = '';
@@ -25,7 +25,7 @@ abstract class CachingRepository implements RepositoryInterface
         $this->cache = app('cache.store');
     }
 
-    public function show($id): EntityModel
+    final public function show($id): EntityModel
     {
         $hash = md5("{$this->tag}:$id");
 
@@ -34,7 +34,7 @@ abstract class CachingRepository implements RepositoryInterface
         });
     }
 
-    public function index(): Arrayable
+    final public function index(): Arrayable
     {
         $hash = md5(json_encode(request()->query()));
 
@@ -43,35 +43,35 @@ abstract class CachingRepository implements RepositoryInterface
         });
     }
 
-    public function store(array $fields): EntityModel
+    final public function store(array $fields): EntityModel
     {
         $model = $this->repository->store($fields);
         $this->flush();
         return $model;
     }
 
-    public function update($id, array $fields): EntityModel
+    final public function update($id, array $fields): EntityModel
     {
         $model = $this->repository->update($id, $fields);
         $this->flush();
         return $model;
     }
 
-    public function destroy($id): ?bool
+    final public function destroy($id): ?bool
     {
         $result = $this->repository->destroy($id);
         $this->flush();
         return $result;
     }
 
-    public function restore($id): ?bool
+    final public function restore($id): ?bool
     {
         $result = $this->repository->restore($id);
         $this->flush();
         return $result;
     }
 
-    public function flush(): void
+    final public function flush(): void
     {
         $tags = array_filter($this->relatedTags);
         array_push($tags, $this->tag);

@@ -6,11 +6,9 @@ namespace ITLeague\Microservice\Http\Helpers;
 
 use Auth;
 use Exception;
-use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class Storage
 {
@@ -52,17 +50,13 @@ class Storage
     /**
      * @param string|null $fileId
      *
-     * @return array|null
+     * @return array
      * @throws \Exception
      */
-    public static function info(?string $fileId)
+    public static function info(string $fileId)
     {
-        if (Str::length($fileId) === 36) {
-            $data = self::call('get', 'info/' . $fileId);
-            return $data['data'];
-        }
-
-        return null;
+        $data = self::call('get', 'info/' . $fileId);
+        return $data['data'];
     }
 
     /**

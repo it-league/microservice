@@ -13,17 +13,17 @@ use Illuminate\Auth\GenericUser;
 
 class User extends GenericUser
 {
-    public function hasScope($scope): bool
+    final public function hasScope($scope): bool
     {
         return collect($this->scope ?? [])->contains($scope);
     }
 
-    public function isAdmin(): bool
+    final public function isAdmin(): bool
     {
         return $this->hasScope('admin') || $this->hasScope('super-admin');
     }
 
-    public function isSuperAdmin(): bool
+    final public function isSuperAdmin(): bool
     {
         return $this->hasScope('super-admin');
     }

@@ -2,7 +2,6 @@
 
 namespace ITLeague\Microservice\Http\Middleware;
 
-use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use Closure;
 
 class LocalizationMiddleware

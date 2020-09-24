@@ -9,13 +9,13 @@ use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Cache;
 
-class LanguageCachingRepository implements LanguageRepositoryInterface
+final class LanguageCachingRepository implements LanguageRepositoryInterface
 {
-    protected const ttl = 60 * 60 * 24 * 30;
-    protected const tag = 'language';
+    private const ttl = 60 * 60 * 24 * 30;
+    private const tag = 'language';
 
-    protected LanguageRepositoryInterface $repository;
-    protected Cache\Repository $cache;
+    private LanguageRepositoryInterface $repository;
+    private Cache\Repository $cache;
 
     public function __construct(LanguageRepositoryInterface $repository)
     {
@@ -25,14 +25,14 @@ class LanguageCachingRepository implements LanguageRepositoryInterface
 
     public function default(): Language
     {
-        return $this->cache->tags(static::tag)->remember(static::tag . ":default", static::ttl, function () {
+        return $this->cache->tags(static::tag)->remember(self::tag . ":default", static::ttl, function () {
             return $this->repository->default();
         });
     }
 
     public function all(): Collection
     {
-        return $this->cache->tags(static::tag)->remember(static::tag . ":all", static::ttl, function () {
+        return $this->cache->tags(static::tag)->remember(self::tag . ":all", static::ttl, function () {
             return $this->repository->all();
         });
     }

@@ -11,9 +11,11 @@ trait TranslatableModel
 
     public static function bootTranslatableModel(): void
     {
-        static::saved(function (self $model) {
-            $model->setTranslation($model->unfilled);
-        });
+        static::saved(
+            function (self $model) {
+                $model->setTranslation($model->unfilled);
+            }
+        );
     }
 
     public function initializeTranslatableModel(): void

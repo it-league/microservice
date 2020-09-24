@@ -10,7 +10,7 @@ use ITLeague\Microservice\Repositories\Interfaces\RestorableRepositoryInterface;
 
 class RestorableRepository extends Repository implements RestorableRepositoryInterface
 {
-    public function restore($id): ?bool
+    final public function restore($id): ?bool
     {
 
         DB::beginTransaction();

@@ -4,13 +4,13 @@
 namespace ITLeague\Microservice\Repositories;
 
 
+use Illuminate\Database\Eloquent\Collection;
 use ITLeague\Microservice\Models\Language;
 use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 
-class LanguageRepository implements LanguageRepositoryInterface
+final class LanguageRepository implements LanguageRepositoryInterface
 {
-    protected Language $model;
+    private Language $model;
 
     public function __construct(Language $model)
     {
