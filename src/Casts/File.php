@@ -36,6 +36,6 @@ class File implements CastsAttributes
 
     final public function set($model, string $key, $value, array $attributes)
     {
-        return $attributes[$key] ?? null;
+        return $value;
     }
 }
