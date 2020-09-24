@@ -123,8 +123,13 @@ abstract class EntityModel extends Model
      *
      * @return mixed|null
      */
-    final public function getUnfilled(string $attribute)
+    final public function getUnfilledAttribute(string $attribute)
     {
         return $this->unfilled[$attribute] ?? null;
+    }
+
+    final public function getUnfilledAttributes(): array
+    {
+        return $this->unfilled;
     }
 }
