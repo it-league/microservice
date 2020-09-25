@@ -42,7 +42,7 @@ abstract class Repository implements RepositoryInterface
      */
     final public function store(array $attributes): EntityModel
     {
-        $attributes = $this->model->validate($attributes, 'store');
+        $attributes = $this->model->validateStore($attributes);
 
         DB::beginTransaction();
 
@@ -71,7 +71,7 @@ abstract class Repository implements RepositoryInterface
      */
     final public function update($id, array $attributes): EntityModel
     {
-        $attributes = $this->model->validate($attributes, 'update');
+        $attributes = $this->model->validateUpdate($attributes);
 
         DB::beginTransaction();
 

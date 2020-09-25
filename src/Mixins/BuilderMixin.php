@@ -4,6 +4,7 @@
 namespace ITLeague\Microservice\Mixins;
 
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 
@@ -14,8 +15,9 @@ class BuilderMixin
     public function withFilter()
     {
         return function () {
+            /** @var \ITLeague\Microservice\Models\EntityModel $model */
             $model = $this->getModel();
-            $filter = $model->validate(request()->filter(), 'filter');
+            $filter = $model->validateFilter(request()->filter());
 
             $keyName = $model->getKeyName();
             $keyValue = Arr::get($filter, $keyName);
@@ -27,7 +29,7 @@ class BuilderMixin
             }
 
             foreach ($model->getFilters() as $key => $closure) {
-                if ($closure instanceof \Closure && isset($filter[$key])) {
+                if ($closure instanceof Closure && isset($filter[$key])) {
                     $closure($this, $filter[$key]);
                 }
             }
@@ -39,19 +41,14 @@ class BuilderMixin
     public function withSort()
     {
         return function () {
-            // TODO: нужна проверка полей
-
-            // $this->sort = $this->validate(request()->sort(), 'sort');
 
             $sort = collect(request()->sort())->mapWithKeys(
-                function (string $field) {
-                    if ($field[0] === '-') {
-                        return [substr($field, 1) => 'desc'];
-                    } else {
-                        return [$field => 'asc'];
-                    }
-                }
+                fn(string $field) => ($field[0] === '-') ? [substr($field, 1) => 'desc'] : [$field => 'asc']
             )->toArray();
+
+            /** @var \ITLeague\Microservice\Models\EntityModel $model */
+            $model = $this->getModel();
+            $sort = Arr::only($sort, $model->validateSort(array_keys($sort)));
 
             foreach ($sort as $field => $direction) {
                 $this->orderBy($field, $direction);

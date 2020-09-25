@@ -14,15 +14,13 @@ class Validator extends \Illuminate\Validation\Validator
         $this->numericRules[] = 'ArrayOrInteger';
     }
 
-    public function validateArrayOrInteger($attribute, $value, $parameters, $validator)
+    public function validateArrayOrInteger($attribute, $value, $parameters, $validator): bool
     {
         if (! is_array($value)) {
             if (! $this->validateInteger($attribute, $value)) {
                 $this->addFailure($attribute, 'integer', []);
-            } else {
-                if (! $this->validateMin($attribute, $value, [1])) {
-                    $this->addFailure($attribute, 'min', [1]);
-                }
+            } elseif (! $this->validateMin($attribute, $value, [1])) {
+                $this->addFailure($attribute, 'min', [1]);
             }
         }
 
@@ -38,6 +36,22 @@ class Validator extends \Illuminate\Validation\Validator
             } elseif (! $this->validateMax($attribute, (string)$value, $maxParameters)) {
                 $this->addFailure($attribute, 'min', $maxParameters);
             }
+        }
+
+        return true;
+    }
+
+    public function validateSortIn(string $attribute, $value, array $parameters, $validator): bool
+    {
+        $this->requireParameterCount(1, $parameters, 'sort_in');
+        $this->addRules([$attribute => 'Array']);
+
+        if (! $this->validateFilled($attribute, $value)) {
+            $this->addFailure($attribute, 'filled', []);
+        } elseif (! $this->validateArray($attribute, $value)) {
+            $this->addFailure($attribute, 'array', []);
+        } elseif (! $this->validateIn($attribute, $value, $parameters)) {
+            $this->addFailure($attribute, 'in', $parameters);
         }
 
         return true;
