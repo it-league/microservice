@@ -24,6 +24,6 @@ final class LanguageRepository implements LanguageRepositoryInterface
 
     public function all(): Collection
     {
-        return $this->model->get();
+        return $this->model->orderByDesc('default')->get();
     }
 }

@@ -29,18 +29,22 @@ abstract class CachingRepository implements RepositoryInterface
     {
         $hash = md5("{$this->tag}:$id");
 
-        return $this->cache->tags($this->tag)->remember("{$this->tag}:$hash", $this->ttl, function () use ($id) {
-            return $this->repository->show($id);
-        });
+        return $this->cache->tags($this->tag)->remember(
+            "{$this->tag}:$hash",
+            $this->ttl,
+            fn() => $this->repository->show($id)
+        );
     }
 
     final public function index(): Arrayable
     {
         $hash = md5(json_encode(request()->query()));
 
-        return $this->cache->tags($this->tag)->remember("{$this->tag}:$hash", $this->ttl, function () {
-            return $this->repository->index();
-        });
+        return $this->cache->tags($this->tag)->remember(
+            "{$this->tag}:$hash",
+            $this->ttl,
+            fn() => $this->repository->index()
+        );
     }
 
     final public function store(array $fields): EntityModel

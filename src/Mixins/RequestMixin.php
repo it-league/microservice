@@ -14,9 +14,7 @@ class RequestMixin
     public function sort()
     {
         return function (): ?array {
-
             if (! isset($this->cache['sort'])) {
-
                 $cache = $this->cache;
                 $string = (string)request()->query('sort');
 
@@ -35,9 +33,7 @@ class RequestMixin
     public function fields()
     {
         return function (): ?array {
-
             if (! isset($this->cache['fields'])) {
-
                 $cache = $this->cache;
                 $string = (string)request()->query('fields');
 
@@ -56,9 +52,7 @@ class RequestMixin
     public function page()
     {
         return function (?string $field = null) {
-
             if (! isset($this->cache['page'])) {
-
                 $cache = $this->cache;
 
                 $cache['page'] = array_map('intval', (array)request()->query('page'));
@@ -85,7 +79,6 @@ class RequestMixin
     public function filter()
     {
         return function (?string $field = null) {
-
             if (! isset($this->cache['filter'])) {
                 $cache = $this->cache;
                 $cache['filter'] = (array)request()->query('filter');

@@ -3,10 +3,7 @@
 namespace ITLeague\Microservice\Traits;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 
 trait ApiResponse
 {
@@ -29,13 +26,17 @@ trait ApiResponse
      */
     public function respondError($msg, int $code = Response::HTTP_INTERNAL_SERVER_ERROR, array $headers = []): JsonResponse
     {
-        return $this->respondData([
-            'error' => [
-                'status' => $code,
-                'title' => Response::$statusTexts[$code],
-                'detail' => $msg,
-            ]
-        ], $code, $headers);
+        return $this->respondData(
+            [
+                'error' => [
+                    'status' => $code,
+                    'title' => Response::$statusTexts[$code],
+                    'detail' => $msg,
+                ]
+            ],
+            $code,
+            $headers
+        );
     }
 
     public function respondNull(int $code = Response::HTTP_NO_CONTENT, array $headers = []): JsonResponse

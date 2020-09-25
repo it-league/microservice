@@ -12,7 +12,7 @@ trait ModelForTranslatedFields
 
     public static function bootModelForTranslatedFields(): void
     {
-        static::addGlobalScope(new TranslatedFieldsScope);
+        static::addGlobalScope(new TranslatedFieldsScope());
     }
 
     public function initializeModelForTranslatedFields(): void

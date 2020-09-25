@@ -25,6 +25,11 @@ class FileAttributeObserver
         }
     }
 
+    /**
+     * @param \ITLeague\Microservice\Models\EntityModel $model
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function saved(EntityModel $model): void
     {
         if (Auth::check() !== true) {

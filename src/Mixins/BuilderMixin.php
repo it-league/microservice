@@ -14,7 +14,6 @@ class BuilderMixin
     public function withFilter()
     {
         return function () {
-
             $model = $this->getModel();
             $filter = $model->validate(request()->filter(), 'filter');
 
@@ -40,18 +39,19 @@ class BuilderMixin
     public function withSort()
     {
         return function () {
-
             // TODO: нужна проверка полей
 
             // $this->sort = $this->validate(request()->sort(), 'sort');
 
-            $sort = collect(request()->sort())->mapWithKeys(function (string $field) {
-                if ($field[0] === '-') {
-                    return [substr($field, 1) => 'desc'];
-                } else {
-                    return [$field => 'asc'];
+            $sort = collect(request()->sort())->mapWithKeys(
+                function (string $field) {
+                    if ($field[0] === '-') {
+                        return [substr($field, 1) => 'desc'];
+                    } else {
+                        return [$field => 'asc'];
+                    }
                 }
-            })->toArray();
+            )->toArray();
 
             foreach ($sort as $field => $direction) {
                 $this->orderBy($field, $direction);
@@ -75,7 +75,6 @@ class BuilderMixin
     public function getWithPage()
     {
         return function () {
-
             return $this->paginate(request()->page('size'), ['*'], 'page[number]', request()->page('number'))
                 ->withPath(request()->fullUrlWithQuery(request()->except('page.number')));
         };

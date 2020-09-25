@@ -10,7 +10,7 @@ use Opis\Closure\SerializableClosure;
 trait SerializableEntity
 {
 
-    public function __sleep()
+    public function __sleep(): array
     {
         foreach ($this->filters as &$filter) {
             if ($filter instanceof Closure) {
@@ -21,7 +21,7 @@ trait SerializableEntity
         return parent::__sleep();
     }
 
-    public function __wakeup()
+    public function __wakeup(): void
     {
         foreach ($this->filters as &$filter) {
             if ($filter instanceof SerializableClosure) {

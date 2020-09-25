@@ -16,7 +16,8 @@ class LocalizationMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $local = $request->hasHeader('x-localization') ? $request->header('x-localization') : language(true)->code;
+        $local = $request->getPreferredLanguage(language()->pluck('code')->toArray());
+
         app()->setLocale($local);
         return $next($request);
     }

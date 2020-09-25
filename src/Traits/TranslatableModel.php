@@ -12,7 +12,9 @@ trait TranslatableModel
     public static function bootTranslatableModel(): void
     {
         static::saved(
-            fn(self $model) => $model->setTranslation($model->getUnfilledAttributes())
+            function (self $model) {
+                $model->setTranslation($model->getUnfilledAttributes());
+            }
         );
     }
 

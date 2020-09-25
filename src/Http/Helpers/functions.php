@@ -15,11 +15,13 @@ if (! function_exists('language')) {
      */
     function language(bool $default = false)
     {
+        $repository = app(LanguageRepositoryInterface::class);
+
         if ($default === false) {
-            return app(LanguageRepositoryInterface::class)->all();
+            return $repository->all();
         }
 
-        return app(LanguageRepositoryInterface::class)->default();
+        return $repository->default();
     }
 }
 

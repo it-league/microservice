@@ -34,6 +34,12 @@ abstract class Repository implements RepositoryInterface
         return request()->page('all') === true ? $query->get() : $query->getWithPage();
     }
 
+    /**
+     * @param array $attributes
+     *
+     * @return \ITLeague\Microservice\Models\EntityModel
+     * @throws \Throwable
+     */
     final public function store(array $attributes): EntityModel
     {
         $attributes = $this->model->validate($attributes, 'store');
@@ -56,6 +62,13 @@ abstract class Repository implements RepositoryInterface
         return $model;
     }
 
+    /**
+     * @param $id
+     * @param array $attributes
+     *
+     * @return \ITLeague\Microservice\Models\EntityModel
+     * @throws \Throwable
+     */
     final public function update($id, array $attributes): EntityModel
     {
         $attributes = $this->model->validate($attributes, 'update');
@@ -78,6 +91,12 @@ abstract class Repository implements RepositoryInterface
         return $model;
     }
 
+    /**
+     * @param $id
+     *
+     * @return bool|null
+     * @throws \Throwable
+     */
     final public function destroy($id): ?bool
     {
         DB::beginTransaction();

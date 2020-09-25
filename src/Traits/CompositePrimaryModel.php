@@ -33,7 +33,7 @@ trait CompositePrimaryModel
     /**
      * Get the primary key value for a save query.
      *
-     * @param string $keyName
+     * @param string|null $keyName
      *
      * @return mixed
      */
