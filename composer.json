@@ -12,13 +12,13 @@
     "require": {
         "php": "^7.4",
         "ext-json": "*",
-        "illuminate/redis": "^7.21",
-        "laravel/lumen-framework": "^7.0",
+        "illuminate/redis": "^8.6",
+        "laravel/lumen-framework": "^8.0",
         "predis/predis": "^1.1",
         "barryvdh/laravel-ide-helper": "^2.7",
-        "flipbox/lumen-generator": "^7.0",
+        "flipbox/lumen-generator": "^8.0",
         "opis/closure": "^3.5",
-        "guzzlehttp/guzzle": "^7.0",
+        "guzzlehttp/guzzle": "^7.0.1",
         "phabloraylan/lumen-middleware-trim-or-convert-strings": "^1.0"
     },
     "autoload": {

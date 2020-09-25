@@ -19,11 +19,14 @@ class TranslatedFieldsScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $locale = app()->getLocale();
-        $builder->join(language(true)->getTable(), $model->getTable() . '.language_id', '=', language(true)->getTable() . '.id');
-        $builder->where(language(true)->getTable() . '.code', app()->getLocale());
+        $languageTable = language(true)->getTable();
+        $languageDefaultCode = language(true)->code;
 
-        if ($locale !== language(true)->code) {
-            $builder->orWhere(language(true)->getTable() . '.code', language(true)->code)->orderBy(language(true)->getTable() . '.default', 'asc');
+        $builder->join($languageTable, $model->getTable() . '.language_id', '=', $languageTable . '.id');
+        $builder->where($languageTable . '.code', app()->getLocale());
+
+        if ($locale !== $languageDefaultCode) {
+            $builder->orWhere($languageTable . '.code', $languageDefaultCode)->orderBy($languageTable . '.default', 'asc');
         }
     }
 }

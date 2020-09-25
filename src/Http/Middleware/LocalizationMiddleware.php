@@ -16,9 +16,12 @@ class LocalizationMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $local = $request->getPreferredLanguage(language()->pluck('code')->toArray());
+        $locale = $request->getPreferredLanguage(language()->pluck('code')->toArray());
 
-        app()->setLocale($local);
-        return $next($request);
+        app()->setLocale($locale);
+
+        $response = $next($request);
+        $response->headers->set('Content-Language', $locale);
+        return $response;
     }
 }
