@@ -50,11 +50,16 @@ class BuilderMixin
             $model = $this->getModel();
             $sort = Arr::only($sort, $model->validateSort(array_keys($sort)));
 
+            foreach ($model->getSorts() as $key => $closure) {
+                if ($closure instanceof Closure && isset($sort[$key])) {
+                    $closure($this, $sort[$key]);
+                    unset($sort[$key]);
+                }
+            }
+
             foreach ($sort as $field => $direction) {
                 $this->orderBy($field, $direction);
             }
-
-            // TODO: добавить возможность доп. сортировок
 
             return $this;
         };

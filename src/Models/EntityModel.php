@@ -20,6 +20,7 @@ abstract class EntityModel extends Model
 
     protected array $eagerLoad = [];
     protected array $filters = [];
+    protected array $sorts = [];
     protected array $files = [];
 
     public function __construct(array $attributes = [])
@@ -95,5 +96,10 @@ abstract class EntityModel extends Model
     final public function getUnfilledAttributes(): array
     {
         return $this->unfilled;
+    }
+
+    public function getSorts(): array
+    {
+        return $this->sorts;
     }
 }
