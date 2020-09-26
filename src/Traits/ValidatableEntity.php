@@ -59,7 +59,7 @@ trait ValidatableEntity
 
     public function validateSort(array $data): array
     {
-        return $this->validate(['sort' => $data], ['sort' => self::rules('sort')])['sort'];
+        return count($data) > 0 ? $this->validate(['sort' => $data], ['sort' => self::rules('sort')])['sort'] : [];
     }
 
     public function validateStore(array $data): array
