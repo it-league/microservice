@@ -31,12 +31,11 @@ trait ValidatableEntity
 
     public static function bootValidatableEntity()
     {
-        static::setRules();
+        static::bootRules();
         static::$rules = [];
     }
 
-
-    private static function setRules(): void
+    private static function bootRules(): void
     {
         $rules = self::validate(static::$rules, self::$rulesValidator);
         static::$staticClassesRules[static::class] = $rules;

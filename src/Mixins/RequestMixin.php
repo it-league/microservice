@@ -16,10 +16,9 @@ class RequestMixin
         return function (): ?array {
             if (! isset($this->cache['sort'])) {
                 $cache = $this->cache;
-                $string = (string)request()->query('sort');
 
-                if (strlen($string) > 0) {
-                    $cache['sort'] = array_map('trim', explode(',', $string));
+                if (request()->has('sort')) {
+                    $cache['sort'] = array_map('trim', explode(',', (string)request()->query('sort')));
                 } else {
                     $cache['sort'] = null;
                 }
@@ -35,10 +34,9 @@ class RequestMixin
         return function (): ?array {
             if (! isset($this->cache['fields'])) {
                 $cache = $this->cache;
-                $string = (string)request()->query('fields');
 
-                if (strlen($string) > 0) {
-                    $cache['fields'] = array_map('trim', explode(',', $string));
+                if (request()->has('fields')) {
+                    $cache['fields'] = array_map('trim', explode(',', (string)request()->query('fields')));
                 } else {
                     $cache['fields'] = null;
                 }

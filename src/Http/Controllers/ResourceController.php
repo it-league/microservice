@@ -38,7 +38,7 @@ abstract class ResourceController extends BaseController implements ResourceCont
     public function store(): JsonResponse
     {
         $model = $this->repository->store(request()->post());
-        $model->load($model->getEagerLoads());
+        $model->refresh()->load($model->getEagerLoads());
         return $this->respondResource(new $this->resource($model), 201);
     }
 

@@ -42,23 +42,27 @@ class BuilderMixin
     {
         return function () {
 
-            $sort = collect(request()->sort())->mapWithKeys(
-                fn(string $field) => ($field[0] === '-') ? [substr($field, 1) => 'desc'] : [$field => 'asc']
-            )->toArray();
+            $requestSort = request()->sort();
 
-            /** @var \ITLeague\Microservice\Models\EntityModel $model */
-            $model = $this->getModel();
-            $sort = Arr::only($sort, $model->validateSort(array_keys($sort)));
+            if(!is_null($requestSort)) {
+                $sort = collect($requestSort)->mapWithKeys(
+                    fn(string $field) => (($field[0] ?? '') === '-') ? [substr($field, 1) => 'desc'] : [$field => 'asc']
+                )->toArray();
 
-            foreach ($model->getSorts() as $key => $closure) {
-                if ($closure instanceof Closure && isset($sort[$key])) {
-                    $closure($this, $sort[$key]);
-                    unset($sort[$key]);
+                /** @var \ITLeague\Microservice\Models\EntityModel $model */
+                $model = $this->getModel();
+                $sort = Arr::only($sort, $model->validateSort(array_keys($sort)));
+
+                foreach ($model->getSorts() as $key => $closure) {
+                    if ($closure instanceof Closure && isset($sort[$key])) {
+                        $closure($this, $sort[$key]);
+                        unset($sort[$key]);
+                    }
                 }
-            }
 
-            foreach ($sort as $field => $direction) {
-                $this->orderBy($field, $direction);
+                foreach ($sort as $field => $direction) {
+                    $this->orderBy($field, $direction);
+                }
             }
 
             return $this;
