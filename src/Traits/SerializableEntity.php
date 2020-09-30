@@ -18,6 +18,12 @@ trait SerializableEntity
             }
         }
 
+        foreach ($this->sorts as &$sort) {
+            if ($sort instanceof Closure) {
+                $sort = new SerializableClosure($sort);
+            }
+        }
+
         return parent::__sleep();
     }
 
@@ -26,6 +32,12 @@ trait SerializableEntity
         foreach ($this->filters as &$filter) {
             if ($filter instanceof SerializableClosure) {
                 $filter = $filter->getClosure();
+            }
+        }
+
+        foreach ($this->sorts as &$sort) {
+            if ($sort instanceof SerializableClosure) {
+                $sort = $sort->getClosure();
             }
         }
 
