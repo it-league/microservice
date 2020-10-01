@@ -11,8 +11,6 @@ use ITLeague\Microservice\Observers\FileAttributeObserver;
 /** @mixin \Illuminate\Database\Eloquent\Model */
 trait WithFileAttributes
 {
-    protected array $files = [];
-
     public function initializeWithFileAttributes(): void
     {
         foreach ($this->getFiles() as $attribute => $settings) {
@@ -33,7 +31,7 @@ trait WithFileAttributes
      */
     final public function getFiles(): array
     {
-        return $this->files;
+        return $this->files ?? [];
     }
 
 }

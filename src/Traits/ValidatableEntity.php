@@ -7,6 +7,7 @@ namespace ITLeague\Microservice\Traits;
 use Illuminate\Support\Arr;
 use Validator;
 
+/** @mixin \ITLeague\Microservice\Models\EntityModel */
 trait ValidatableEntity
 {
     private static array $staticClassesRules;
