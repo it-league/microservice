@@ -6,8 +6,6 @@ namespace ITLeague\Microservice\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use ITLeague\Microservice\Casts\File;
-use ITLeague\Microservice\Observers\FileAttributeObserver;
 use ITLeague\Microservice\Traits\SerializableEntity;
 use ITLeague\Microservice\Traits\ValidatableEntity;
 
@@ -21,28 +19,7 @@ abstract class EntityModel extends Model
     protected array $eagerLoad = [];
     protected array $filters = [];
     protected array $sorts = [];
-    protected array $files = [];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        // add cast fo file attributes
-        foreach ($this->getFiles() as $attribute => $settings) {
-            $this->mergeCasts([$attribute => File::class]);
-        }
-    }
-
-    protected static function booted()
-    {
-        parent::booted();
-
-        // add observer for file attributes
-        $instance = new static();
-        if (count($instance->getFiles()) > 0) {
-            $instance->registerObserver(FileAttributeObserver::class);
-        }
-    }
 
     /**
      * Сохраняет переданные, но незаполненные в текущей модели атрибуты в спец. свойство
@@ -73,14 +50,6 @@ abstract class EntityModel extends Model
     final public function getFilters(): array
     {
         return $this->filters;
-    }
-
-    /**
-     * @return array
-     */
-    final public function getFiles(): array
-    {
-        return $this->files;
     }
 
     /**

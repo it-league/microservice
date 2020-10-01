@@ -61,7 +61,7 @@
 # Работа с полями типа file
 
 В базе поля типа file хранятся в виде UUID файла в хранилище. В ответах такие поля возвращаются в виде метаданных 
-самого файла (см. документацию для сервиса storage). Всё, что необходимо для задания такого типа полей - у сущности 
+самого файла (см. документацию для сервиса storage). Всё, что необходимо для задания такого типа полей - у модели 
 заполнять свойство file параметрами: permission, sizes, force.
 
 При force равном true не будет происходить подтверждения файла при обновлении значения поля.
@@ -140,10 +140,10 @@
 ### Миграции
 
 Есть 3 дополнительных метода класса `Blueprint`:
-* *softDeletesWithUserFields* - добавляет к таблице поля `deleted_at` и `deleted_by`. Для работы с этими полями 
+* *softDeletesWithUserAttributes* - добавляет к таблице поля `deleted_at` и `deleted_by`. Для работы с этими полями 
 к модели надо подключить трейт `ITLeague\Microservice\Traits\SofDeletes`
-* *timestampsWithUserFields* - добавляет к таблице поля `created_at`, `created_by`, `updated_at` и `updated_by`. 
-К модели подключать трейт `ITLeague\Microservice\Traits\WithUserFields`. Подразумевается, что добавлять и
+* *timestampsWithUserAttributes* - добавляет к таблице поля `created_at`, `created_by`, `updated_at` и `updated_by`. 
+К модели подключать трейт `ITLeague\Microservice\Traits\WithUserAttributes`. Подразумевается, что добавлять и
 редактировать записи в таблице могут только авторизованные пользователи. Иначе необходимые поля к таблице 
 добавляются руками.
 * *foreignLanguageId* - добавляет к таблице с переводимыми полями сущности поле `language_id` со ссылкой 
@@ -152,7 +152,7 @@
 Также есть большой класс-хелпер для добавления триггеров и функций к базе postgres `ITLeague\Microservice\Http\Helpers\DB`. 
 
 В первой миграции проекта желательно создать три функции: `createOnInsertFunction`, `createOnUpdateFunction` 
-(если будет использоваться  трейт `ITLeague\Microservice\Traits\WithUserFields`) и `createOnDeleteFunction` 
+(если будет использоваться  трейт `ITLeague\Microservice\Traits\WithUserAttributes`) и `createOnDeleteFunction` 
 (если будет использоваться трейт `ITLeague\Microservice\Traits\SofDeletes`). В дальнейшем для каждой 
 таблицы с сущностью необходимо добавлять триггеры `createOnUpdateTrigger`, `createOnInsertTrigger` 
 и `createOnDeleteTrigger`. также для каждой сущности рекомендуется добавлять запретить изменять 
@@ -170,4 +170,4 @@
 
  К базовому классу `TestCase` от Lumen добавлены свойства `Faker\Factory` faker, user/admin/superAdmin` (экземпляры класса 
  `ITLeague\Microservice\Models\User` с соответствующими правами). Также повешен постоянный 204 ответ на обращения
- к файловому хранилища. Ещё есть стандартная структура возвращаемых ошибок.
+ к файловому хранилищу. Ещё есть стандартная структура возвращаемых ошибок.

@@ -6,14 +6,18 @@ namespace ITLeague\Microservice\Observers;
 
 use Auth;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use ITLeague\Microservice\Http\Helpers\Storage;
-use ITLeague\Microservice\Models\EntityModel;
 
 class FileAttributeObserver
 {
-    public function deleted(EntityModel $model): void
+    /**
+     * @param \Illuminate\Database\Eloquent\Model $model
+     */
+    public function deleted(Model $model): void
     {
+        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
         $attributes = $model->getAttributes();
         foreach ($model->getFiles() as $attribute => $settings) {
             $value = $attributes[$attribute] ?? '';
@@ -26,12 +30,13 @@ class FileAttributeObserver
     }
 
     /**
-     * @param \ITLeague\Microservice\Models\EntityModel $model
+     * @param \Illuminate\Database\Eloquent\Model $model
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function saved(EntityModel $model): void
+    public function saved(Model $model): void
     {
+        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
         if (Auth::check() !== true) {
             throw new AuthorizationException('Can`t save file without authorization');
         }

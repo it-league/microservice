@@ -9,7 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 /** @mixin Blueprint */
 class BlueprintMixin
 {
-    public function softDeletesWithUserFields()
+    public function softDeletesWithUserAttributes()
     {
         return function () {
             $this->softDeletes();
@@ -17,7 +17,7 @@ class BlueprintMixin
         };
     }
 
-    public function timestampsWithUserFields()
+    public function timestampsWithUserAttributes()
     {
         return function () {
             $this->timestamp('created_at')->useCurrent();

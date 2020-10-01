@@ -1,0 +1,39 @@
+<?php
+
+
+namespace ITLeague\Microservice\Traits;
+
+
+use ITLeague\Microservice\Casts\File;
+use ITLeague\Microservice\Observers\FileAttributeObserver;
+
+
+/** @mixin \Illuminate\Database\Eloquent\Model */
+trait WithFileAttributes
+{
+    protected array $files = [];
+
+    public function initializeWithFileAttributes(): void
+    {
+        foreach ($this->getFiles() as $attribute => $settings) {
+            $this->mergeCasts([$attribute => File::class]);
+        }
+    }
+
+    protected static function bootWithFileAttributes(): void
+    {
+        $instance = new static();
+        if (count($instance->getFiles()) > 0) {
+            $instance->registerObserver(FileAttributeObserver::class);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    final public function getFiles(): array
+    {
+        return $this->files;
+    }
+
+}

@@ -18,8 +18,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|self whereCreatedBy(string $value)
  * @method static Builder|self whereUpdatedAt(Carbon $value)
  * @method static Builder|self whereUpdatedBy(string $value)
+ *
+ * @mixin \Illuminate\Database\Eloquent\Model
  */
-trait WithUserFields
+trait WithUserAttributes
 {
     public function initializeWithUserFieldsTrait(): void
     {
