@@ -4,19 +4,16 @@
 namespace ITLeague\Microservice\Traits;
 
 
-use Illuminate\Database\Eloquent\Builder;
-
 trait CompositePrimaryModel
 {
 
     /**
      * Set the keys for a save update query.
      *
-     * @param Builder $query
-     *
-     * @return Builder
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function setKeysForSaveQuery(Builder $query): Builder
+    protected function setKeysForSaveQuery($query)
     {
         $keys = $this->getKeyName();
         if (! is_array($keys)) {
