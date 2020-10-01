@@ -20,7 +20,7 @@ trait WithFileAttributes
         }
     }
 
-    protected static function bootWithFileAttributes(): void
+    public static function bootWithFileAttributes(): void
     {
         $instance = new static();
         if (count($instance->getFiles()) > 0) {

@@ -6,6 +6,7 @@ namespace ITLeague\Microservice\Traits;
 
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/** @mixin \ITLeague\Microservice\Models\EntityModel */
 trait TranslatableModel
 {
 

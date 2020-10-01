@@ -23,12 +23,12 @@ use Illuminate\Support\Carbon;
  */
 trait WithUserAttributes
 {
-    public function initializeWithUserFieldsTrait(): void
+    public function initializeWithUserAttributes(): void
     {
         $this->mergeGuarded(['created_at', 'created_by', 'updated_at', 'updated_by']);
     }
 
-    protected static function bootWithUserFields(): void
+    public static function bootWithUserAttributes(): void
     {
         static::creating(
             function (self $model) {

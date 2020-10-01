@@ -30,8 +30,8 @@ namespace Illuminate\Http {
 namespace Illuminate\Database\Schema {
 
     /**
-     * @method void softDeletesWithUserFields()
-     * @method void timestampsWithUserFields()
+     * @method void softDeletesWithUserAttributes()
+     * @method void timestampsWithUserAttributes()
      * @method void foreignLanguageId()
      */
     class Blueprint

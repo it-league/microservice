@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class TranslatedFieldsScope implements Scope
+class TranslatedAttributesScope implements Scope
 {
     /**
      * Получает запись из таблицы переводов на запрошенном языке (или языке по умолчанию)
