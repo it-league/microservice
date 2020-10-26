@@ -37,14 +37,49 @@ class Storage
         self::call('put', 'confirm/' . $fileId, ['permission' => $permission, 'sizes' => $sizes]);
     }
 
+    public static function permission(string $fileId, ?array $permission = [])
+    {
+        self::call('put', 'permission/' . $fileId, ['permission' => $permission]);
+    }
+
+    /**
+     * @param string $fileId
+     *
+     * @throws \Exception
+     */
     public static function delete(string $fileId)
     {
-        // TODO: игнорировать только 404 ошибки
-
         try {
             self::call('delete', 'delete/' . $fileId);
         } catch (Exception $e) {
+            if ($e->getCode() !== 404) {
+                throw $e;
+            }
         }
+    }
+
+    /**
+     * @param resource $file
+     * @param string|null $path
+     *
+     * @throws \Exception
+     */
+    public static function upload($file, ?string $path = 'upload')
+    {
+        self::call('post', 'upload', ['path' => $path], ['file' => $file]);
+    }
+
+    /**
+     * @param resource $file
+     * @param string|null $path
+     * @param array|null $permission
+     * @param array|null $sizes
+     *
+     * @throws \Exception
+     */
+    public static function uploadForce($file, ?string $path = 'upload', ?array $permission = [], ?array $sizes = [])
+    {
+        self::call('post', 'force/upload', ['path' => $path, 'permission' => $permission, 'sizes' => $sizes], ['file' => $file]);
     }
 
     /**
@@ -63,14 +98,20 @@ class Storage
      * @param string $method
      * @param string $url
      * @param array $data
+     * @param array $files
      *
      * @return array|null
      * @throws \Exception
      */
-    private static function call(string $method, string $url, array $data = [])
+    private static function call(string $method, string $url, array $data = [], array $files = [])
     {
         try {
-            $response = self::http()->$method($url, $data)->throw();
+            $http = self::http();
+            foreach ($files as $name => $file) {
+                $http = $http->attach($name, $file);
+            }
+
+            $response = $http->$method($url, $data)->throw();
             if (($body = json_decode($response->body(), true)) && Arr::has((array)$body, 'data')) {
                 return json_decode($response->body(), true);
             }

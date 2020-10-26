@@ -17,9 +17,9 @@
         "predis/predis": "^1.1",
         "barryvdh/laravel-ide-helper": "^2.7",
         "flipbox/lumen-generator": "^8.0",
-        "opis/closure": "^3.5",
         "guzzlehttp/guzzle": "^7.0.1",
-        "phabloraylan/lumen-middleware-trim-or-convert-strings": "^1.0"
+        "phabloraylan/lumen-middleware-trim-or-convert-strings": "^1.0",
+        "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.0"
     },
     "autoload": {
         "psr-4": {

@@ -13,6 +13,7 @@ use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
 use ITLeague\Microservice\Exceptions\Handler;
+use ITLeague\Microservice\Http\Bus\Adapter;
 use ITLeague\Microservice\Mixins\BlueprintMixin;
 use ITLeague\Microservice\Mixins\BuilderMixin;
 use ITLeague\Microservice\Mixins\RequestMixin;
@@ -24,6 +25,8 @@ use ITLeague\Microservice\Repositories\LanguageRepository;
 use ITLeague\Microservice\Validators\Validator;
 use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
 use LumenMiddlewareTrimOrConvertString\TrimStrings;
+use VladimirYuldashev\LaravelQueueRabbitMQ\Console\ConsumeCommand;
+use VladimirYuldashev\LaravelQueueRabbitMQ\LaravelQueueRabbitMQServiceProvider;
 
 class MicroserviceServiceProvider extends ServiceProvider
 {
@@ -35,10 +38,16 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $configPath = __DIR__ . '/../config/microservice.php';
-        $this->mergeConfigFrom($configPath, 'microservice');
+        app()->configure('queue');
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/rabbitmq_options.php',
+            'queue.connections.rabbitmq.options'
+        );
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/microservice.php', 'microservice');
 
         app()->register(RedisServiceProvider::class);
+        app()->register(LaravelQueueRabbitMQServiceProvider::class);
         if (config('app.debug') === true) {
             app()->register(IdeHelperServiceProvider::class);
             app()->register(LumenGeneratorServiceProvider::class);
@@ -47,7 +56,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         /* Подключение репозитория для работы с языками */
         $this->app->singleton(
             LanguageRepositoryInterface::class,
-            fn () => new LanguageCachingRepository(new LanguageRepository(new Language()))
+            fn() => new LanguageCachingRepository(new LanguageRepository(new Language()))
         );
 
         /* Расширение штатного валидатора */
@@ -58,11 +67,48 @@ class MicroserviceServiceProvider extends ServiceProvider
         /* Команда artisan создания миграции для таблицы языков */
         $this->commands([LanguageTableCreate::class]);
 
+        $this->app->singleton(
+            'microservice.bus',
+            function ($app) {
+                return new Adapter();
+            }
+        );
+
         /* Обработчик ошибок */
         $this->app->singleton(
             ExceptionHandler::class,
             Handler::class
         );
+
+        if ($this->app->runningInConsole()) {
+            $this->app->singleton(
+                'microservice.bus.consumer',
+                function () {
+                    $isDownForMaintenance = function () {
+                        return $this->app->isDownForMaintenance();
+                    };
+
+                    return new BusConsumer(
+                        $this->app['queue'],
+                        $this->app['events'],
+                        $this->app[ExceptionHandler::class],
+                        $isDownForMaintenance
+                    );
+                }
+            );
+
+            $this->app->singleton(
+                ConsumeCommand::class,
+                static function ($app) {
+                    return new ConsumeCommand(
+                        $app['microservice.bus.consumer'],
+                        $app['cache.store']
+                    );
+                }
+            );
+
+            $this->commands([ConsumeCommand::class]);
+        }
 
         /* Расширения для фасадов */
         Request::mixin(new RequestMixin());

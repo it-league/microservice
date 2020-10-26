@@ -23,9 +23,9 @@
 * [predis/predis](https://github.com/predis/predis)
 * [guzzlehttp/guzzle](https://github.com/guzzle/guzzle)
 * [flipbox/lumen-generator](https://github.com/flipboxstudio/lumen-generator): дополнительные команды artisan для Lumen. Очень помогает в разработке
-* [opis/closure](https://github.com/opis/closure): библиотека для сериализации значений типа Closure. Используется в функционале кэширования моделей. Также модели сериализуются для запуска job.
 * [barryvdh/laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper): библиотека формирует метафайлы для использования IDE. Также может формировать phpDoc для моделей. Помогает в разработке и описании моделей
 * [phabloraylan/lumen-middleware-trim-or-convert-strings](https://github.com/phabloraylan/lumen-middleware-trim-or-convert-strings): включает 2 middleware для триминга строк из запросов и превращения пустых строк в null
+* [vladimir-yuldashev/laravel-queue-rabbitmq](https://github.com/vyuldashev/laravel-queue-rabbitmq): библиотека для работы с очередями rabbitmq
 
 # Многоязычность
 
@@ -70,6 +70,27 @@
 заполнять свойство file параметрами: permission, sizes, force.
 
 При force равном true не будет происходить подтверждения файла при обновлении значения поля.
+
+# Шина сообщений на основе RabbitMQ
+RabbitMQ используется для асинхронной передачи сообщений между сервисами. Один сервис может отправить событие в шину
+с помощью фасада `MicriserviceBus`
+
+`MicroserviceBus::push('event_name', $data)`
+
+Другой сервис может подписаться на это событие
+
+`MicroserviceBus::listen('event_name', Handler::class)`
+
+Важно! Подписка на события должна происходить после регистрации провайдера библиотеки!
+
+В качестве обработчика события может выступать любой класс с интерфейсом `ITLeague\Microservice\Http\Bus\EventHandler`.
+
+Запуск воркера для прослушивания событий у сервиса происходит командой из [laravel-queue-rabbitmq](https://github.com/vyuldashev/laravel-queue-rabbitmq)
+
+`php artisan rabbitmq:consume`
+
+Воркер желательно перезапускать после каждого коммита. Также для стабильной работы необходимо подключить
+супервизор.
 
 # Остальной функционал базового класса сущности
 

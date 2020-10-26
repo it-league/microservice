@@ -5,13 +5,13 @@ namespace ITLeague\Microservice\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
-use ITLeague\Microservice\Traits\SerializableEntity;
 use ITLeague\Microservice\Traits\ValidatableEntity;
 
 abstract class EntityModel extends Model
 {
-    use SerializableEntity;
+    use SerializesModels;
     use ValidatableEntity;
 
     private array $unfilled = [];
