@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use ITLeague\Microservice\Facades\MicroserviceBus;
 
 class Storage
 {
@@ -34,7 +35,7 @@ class Storage
 
     public static function confirm(string $fileId, ?array $permission = [], ?array $sizes = [])
     {
-        self::call('put', 'confirm/' . $fileId, ['permission' => $permission, 'sizes' => $sizes]);
+        MicroserviceBus::push('file.confirm', ['id' => $fileId, 'permission' => $permission, 'sizes' => $sizes]);
     }
 
     public static function permission(string $fileId, ?array $permission = [])
@@ -49,13 +50,7 @@ class Storage
      */
     public static function delete(string $fileId)
     {
-        try {
-            self::call('delete', 'delete/' . $fileId);
-        } catch (Exception $e) {
-            if ($e->getCode() !== 404) {
-                throw $e;
-            }
-        }
+        MicroserviceBus::push('file.delete', ['id' => $fileId]);
     }
 
     /**
