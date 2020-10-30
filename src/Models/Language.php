@@ -4,6 +4,7 @@ namespace ITLeague\Microservice\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * ITLeague\Microservice\Http\Models\Language
@@ -24,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Language extends Model
 {
+    use SerializesModels;
+
     protected $casts = [
         'default' => 'boolean'
     ];

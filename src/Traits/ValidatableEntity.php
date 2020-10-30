@@ -33,7 +33,6 @@ trait ValidatableEntity
     public static function bootValidatableEntity()
     {
         static::bootRules();
-        static::$rules = [];
     }
 
     private static function bootRules(): void

@@ -14,6 +14,7 @@
         "ext-json": "*",
         "illuminate/redis": "^8.6",
         "laravel/lumen-framework": "^8.0",
+        "opis/closure": "^3.6",
         "predis/predis": "^1.1",
         "barryvdh/laravel-ide-helper": "^2.7",
         "flipbox/lumen-generator": "^8.0",
@@ -24,9 +25,8 @@
     "autoload": {
         "psr-4": {
             "ITLeague\\Microservice\\": "src/"
-
         },
-        "files" : [
+        "files": [
             "src/Http/Helpers/functions.php"
         ]
     }

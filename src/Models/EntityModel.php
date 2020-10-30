@@ -5,15 +5,16 @@ namespace ITLeague\Microservice\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use ITLeague\Microservice\Traits\SerializesEntity;
 use ITLeague\Microservice\Traits\ValidatableEntity;
 
 abstract class EntityModel extends Model
 {
-    use SerializesModels;
+    use SerializesEntity;
     use ValidatableEntity;
 
+    private const closureProperties = ['filters', 'sorts', 'rules'];
     private array $unfilled = [];
 
     protected array $eagerLoad = [];
