@@ -38,7 +38,7 @@ final class Job implements ShouldQueue
         }
 
         foreach (MicroserviceBus::getHandlers($this->event) as $handler) {
-            (new $handler())->handle($this->data);
+            (new $handler())->handle($this->event, $this->data);
         }
     }
 
