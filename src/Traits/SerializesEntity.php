@@ -4,8 +4,8 @@
 namespace ITLeague\Microservice\Traits;
 
 
-use Arr;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 use ReflectionClass;
 
 trait SerializesEntity
@@ -30,7 +30,7 @@ trait SerializesEntity
 
         foreach ($properties as $property) {
             $name = $property->getName();
-            if (in_array($name, static::closureProperties)) {
+            if (in_array($name, self::closureProperties)) {
                 $property->setAccessible(true);
 
                 if (! $property->isInitialized($this)) {
@@ -63,11 +63,12 @@ trait SerializesEntity
         $properties = (new ReflectionClass($this))->getProperties();
 
         $class = get_class($this);
+        $closurePropertyNames = [];
 
         foreach ($properties as $property) {
             $name = $property->getName();
 
-            if (in_array($name, static::closureProperties)) {
+            if (in_array($name, self::closureProperties)) {
                 if ($property->isPrivate()) {
                     $name = "\0{$class}\0{$name}";
                 } elseif ($property->isProtected()) {
@@ -84,10 +85,11 @@ trait SerializesEntity
                     $this,
                     \Opis\Closure\unserialize($values[$name])
                 );
+                $closurePropertyNames[] = $name;
             }
         }
 
-        return $this->model__unserialize(Arr::except($values, static::closureProperties));
+        return $this->model__unserialize(Arr::except($values, $closurePropertyNames));
     }
 
 }
