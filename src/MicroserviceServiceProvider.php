@@ -8,8 +8,10 @@ use Gate;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Http\Request;
 use Illuminate\Redis\RedisServiceProvider;
+use Illuminate\Support\Fluent;
 use Illuminate\Support\ServiceProvider;
 use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
 use ITLeague\Microservice\Exceptions\Handler;
@@ -114,6 +116,12 @@ class MicroserviceServiceProvider extends ServiceProvider
         Request::mixin(new RequestMixin());
         Blueprint::mixin(new BlueprintMixin());
         Builder::mixin(new BuilderMixin());
+
+        // новый тип колонки в базе postgres
+        PostgresGrammar::macro(
+            'typeUuidArray',
+            fn (Fluent $column) => 'uuid[]'
+        );
 
         /* Права доступа по-умолчанию */
         Gate::before(

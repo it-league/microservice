@@ -33,8 +33,14 @@ abstract class EntityModel extends Model
     final public function fill(array $attributes): self
     {
         $result = parent::fill($attributes);
-        $this->unfilled = count($attributes) ? Arr::except($attributes, array_keys($this->attributes)) : [];
+        $this->mergeUnfilled($attributes);
         return $result;
+    }
+
+    final public function mergeUnfilled(array $attributes): void
+    {
+        $unfilled = count($attributes) ? Arr::except($attributes, array_keys($this->attributes)) : [];
+        $this->unfilled = array_merge($this->unfilled, $unfilled);
     }
 
     /**

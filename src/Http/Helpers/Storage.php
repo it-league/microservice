@@ -5,6 +5,7 @@ namespace ITLeague\Microservice\Http\Helpers;
 
 
 use Auth;
+use Cache;
 use Exception;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
@@ -13,6 +14,8 @@ use ITLeague\Microservice\Facades\MicroserviceBus;
 
 class Storage
 {
+    protected const ttl = 60 * 60 * 24 * 30; // month
+
     private static function http()
     {
         static $http;
@@ -33,14 +36,27 @@ class Storage
         return $http;
     }
 
+    private static function getCacheKey(string $fileId): string
+    {
+        return md5("file:$fileId");
+    }
+
+    private static function clearCache(string $fileId)
+    {
+        Cache::forget(static::getCacheKey($fileId));
+    }
+
     public static function confirm(string $fileId, ?array $permission = [], ?array $sizes = [])
     {
+        // TODO: проверки на существование
         MicroserviceBus::push('file.confirm', ['id' => $fileId, 'permission' => $permission, 'sizes' => $sizes]);
+        self::clearCache($fileId);
     }
 
     public static function permission(string $fileId, ?array $permission = [])
     {
         self::call('put', 'permission/' . $fileId, ['permission' => $permission]);
+        self::clearCache($fileId);
     }
 
     /**
@@ -51,6 +67,7 @@ class Storage
     public static function delete(string $fileId)
     {
         MicroserviceBus::push('file.delete', ['id' => $fileId]);
+        self::clearCache($fileId);
     }
 
     /**
@@ -85,7 +102,11 @@ class Storage
      */
     public static function info(string $fileId)
     {
-        $data = self::call('get', 'info/' . $fileId);
+        $data = Cache::remember(
+            static::getCacheKey($fileId),
+            static::ttl,
+            fn() => self::call('get', 'info/' . $fileId)
+        );
         return $data['data'];
     }
 

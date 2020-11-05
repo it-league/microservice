@@ -4,14 +4,13 @@
 namespace ITLeague\Microservice\Casts;
 
 
-use Cache;
+use DB;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Str;
 use ITLeague\Microservice\Http\Helpers\Storage;
 
 class File implements CastsAttributes
 {
-    protected const ttl = 60 * 60 * 24 * 30; // month
 
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
@@ -24,18 +23,37 @@ class File implements CastsAttributes
      */
     final public function get($model, string $key, $value, array $attributes): ?array
     {
-        if (Str::length((string)$value) === 36) {
-            return Cache::remember(
-                md5("file:$value"),
-                static::ttl,
-                fn() => Storage::info($value)
-            );
+        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
+        if ($model->isFileAttributeMultiple($key)) {
+            $value = $value ? json_decode($value, true) : [];
+
+            foreach ($value as $index => $item) {
+                $value[$index] = $this->getFileInfo($item);
+            }
+
+            return array_filter($value);
+        } else {
+            return $this->getFileInfo($value);
         }
-        return null;
     }
 
     final public function set($model, string $key, $value, array $attributes)
     {
-        return $value;
+        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
+        if ($model->isFileAttributeMultiple($key)) {
+            $json = json_encode($value);
+            $model->mergeUnfilled(['original_' . $key => $value]);
+            return DB::raw("json_to_array('{$json}')::uuid[]");
+        } else {
+            return $value;
+        }
+    }
+
+    private function getFileInfo(?string $value): ?array
+    {
+        if (Str::length((string)$value) === 36) {
+            return Storage::info($value);
+        }
+        return null;
     }
 }
