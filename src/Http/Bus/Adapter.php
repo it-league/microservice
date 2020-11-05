@@ -9,7 +9,7 @@ final class Adapter
     private array $handlers = [];
 
 
-    public function push(string $event, array $data)
+    public function push(string $event, array $data): void
     {
         dispatch(new Job($data, $event))->onQueue($event);
     }

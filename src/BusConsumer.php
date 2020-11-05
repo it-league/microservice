@@ -7,6 +7,7 @@ use Illuminate\Queue\WorkerOptions;
 use ITLeague\Microservice\Facades\MicroserviceBus;
 use PhpAmqpLib\Exception\AMQPRuntimeException;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Throwable;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Consumer;
@@ -35,10 +36,20 @@ class BusConsumer extends Consumer
             null
         );
 
+        $this->channel->exchange_declare(
+            config('queue.connections.rabbitmq.options.exchange.name'),
+            config('queue.connections.rabbitmq.options.exchange.type'),
+            config('queue.connections.rabbitmq.options.exchange.passive'),
+            config('queue.connections.rabbitmq.options.exchange.durable'),
+            config('queue.connections.rabbitmq.options.exchange.auto_delete'),
+            false,
+            true,
+            new AMQPTable(config('queue.connections.rabbitmq.options.exchange.arguments') ?? [])
+        );
 
         foreach (MicroserviceBus::getEvents() as $event) {
             $queue = config('app.name') . '.' . $event;
-            $this->channel->queue_declare($queue, false, false, true, false);
+            $this->channel->queue_declare($queue, false, true, true, false);
             $this->channel->queue_bind($queue, config('queue.connections.rabbitmq.options.exchange.name'), $event);
             $this->consumerTags[] = $this->channel->basic_consume(
                 $queue,
