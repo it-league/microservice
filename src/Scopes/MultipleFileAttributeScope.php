@@ -16,7 +16,7 @@ class MultipleFileAttributeScope implements Scope
         /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
         foreach ($model->getFileAttributesSettings() as $attribute => $settings) {
             if ($model->isFileAttributeMultiple($attribute)) {
-                $builder->select()->selectRaw("array_to_json(\"$attribute\") as \"$attribute\"");
+                $builder->select()->selectRaw("array_to_json(\"{$model->getTable()}\".\"{$attribute}\") as \"$attribute\"");
             }
         }
     }

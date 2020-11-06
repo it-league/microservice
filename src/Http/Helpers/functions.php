@@ -24,3 +24,22 @@ if (! function_exists('language')) {
         return $repository->default();
     }
 }
+
+if (! function_exists('file_url')) {
+    /**
+     * Return url for file storage
+     *
+     * @param string $fileId
+     * @param bool $inline
+     *
+     * @return string
+     */
+    function file_url(string $fileId, bool $inline = true)
+    {
+        $url = config('microservice.api_uri') . '/' . config('microservice.storage_prefix') . '/file/' . $fileId;
+        if ($inline !== true) {
+            $url .= '?disposition=' . HeaderUtils::DISPOSITION_ATTACHMENT;
+        }
+        return $url;
+    }
+}

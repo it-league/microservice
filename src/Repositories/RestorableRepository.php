@@ -8,7 +8,7 @@ use DB;
 use Exception;
 use ITLeague\Microservice\Repositories\Interfaces\RestorableRepositoryInterface;
 
-class RestorableRepository extends Repository implements RestorableRepositoryInterface
+abstract class RestorableRepository extends Repository implements RestorableRepositoryInterface
 {
     /**
      * @param $id
@@ -16,7 +16,7 @@ class RestorableRepository extends Repository implements RestorableRepositoryInt
      * @return bool|null
      * @throws \Throwable
      */
-    final public function restore($id): ?bool
+    public function restore($id): ?bool
     {
         DB::beginTransaction();
 
