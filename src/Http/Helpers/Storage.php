@@ -89,11 +89,12 @@ class Storage
      * @param string|null $filename
      * @param string|null $path
      *
+     * @return array|null
      * @throws \Exception
      */
     public static function upload($file, ?string $filename = null, ?string $path = 'upload')
     {
-        self::call('post', 'upload', ['path' => $path], ['file' => ['name' => $filename, 'content' => $file]]);
+        return self::call('post', 'upload', ['path' => $path], ['file' => ['name' => $filename, 'content' => $file]]);
     }
 
     /**
@@ -103,11 +104,12 @@ class Storage
      * @param array|null $permission
      * @param array|null $sizes
      *
+     * @return array|null
      * @throws \Exception
      */
     public static function uploadForce($file, ?string $filename = null, ?string $path = 'upload', ?array $permission = [], ?array $sizes = [])
     {
-        self::call(
+        return self::call(
             'post',
             'force/upload',
             ['path' => $path, 'permission' => $permission, 'sizes' => $sizes],
