@@ -11,8 +11,8 @@ use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 
 abstract class CachingRepository implements RepositoryInterface
 {
-    private RepositoryInterface $repository;
-    private Cache\Repository $cache;
+    protected RepositoryInterface $repository;
+    protected Cache\Repository $cache;
 
     protected int $ttl = 60;
     protected string $tag = '';

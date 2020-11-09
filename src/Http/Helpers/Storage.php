@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use ITLeague\Microservice\Facades\MicroserviceBus;
 
@@ -85,26 +86,33 @@ class Storage
 
     /**
      * @param resource $file
+     * @param string|null $filename
      * @param string|null $path
      *
      * @throws \Exception
      */
-    public static function upload($file, ?string $path = 'upload')
+    public static function upload($file, ?string $filename = null, ?string $path = 'upload')
     {
-        self::call('post', 'upload', ['path' => $path], ['file' => $file]);
+        self::call('post', 'upload', ['path' => $path], ['file' => ['name' => $filename, 'content' => $file]]);
     }
 
     /**
-     * @param resource $file
+     * @param resource|string $file
+     * @param string|null $filename
      * @param string|null $path
      * @param array|null $permission
      * @param array|null $sizes
      *
      * @throws \Exception
      */
-    public static function uploadForce($file, ?string $path = 'upload', ?array $permission = [], ?array $sizes = [])
+    public static function uploadForce($file, ?string $filename = null, ?string $path = 'upload', ?array $permission = [], ?array $sizes = [])
     {
-        self::call('post', 'force/upload', ['path' => $path, 'permission' => $permission, 'sizes' => $sizes], ['file' => $file]);
+        self::call(
+            'post',
+            'force/upload',
+            ['path' => $path, 'permission' => $permission, 'sizes' => $sizes],
+            ['file' => ['name' => $filename, 'content' => $file]]
+        );
     }
 
     /**
@@ -136,8 +144,9 @@ class Storage
     {
         try {
             $http = self::http();
-            foreach ($files as $name => $file) {
-                $http = $http->attach($name, $file);
+            foreach ($files as $field => $file) {
+                $http = $http->attach($field, $file['content'], $file['name'] ?? Str::random(32));
+                $data = self::getFlattenData($data);
             }
 
             $response = $http->$method($url, $data)->throw();
@@ -153,5 +162,34 @@ class Storage
                 throw new Exception('Storage service error: ' . $e->getMessage(), 500);
             }
         }
+    }
+
+    private static function getFlattenData(array $data): array
+    {
+        $result = [];
+
+        foreach ($data as $subKey => $value) {
+            if (is_array($value)) {
+                $result = self::getFlattenDataRecursive($subKey, $value, $result);
+            } else {
+                $result[] = ['name' => $subKey, 'contents' => $value];
+            }
+        }
+
+        return $result;
+    }
+
+    private static function getFlattenDataRecursive(string $key, array $data, array $result = []): array
+    {
+        foreach ($data as $subKey => $value) {
+            $subKey = $key . '[' . $subKey . ']';
+            if (is_array($value)) {
+                $result = self::getFlattenDataRecursive($subKey, $value, $result);
+            } else {
+                $result[] = ['name' => $subKey, 'contents' => $value];
+            }
+        }
+
+        return $result;
     }
 }

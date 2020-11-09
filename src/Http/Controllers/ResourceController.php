@@ -5,6 +5,7 @@ namespace ITLeague\Microservice\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 use ITLeague\Microservice\Http\Interfaces\ResourceControllerInterface;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 use ITLeague\Microservice\Traits\ApiResponse;
@@ -21,11 +22,11 @@ abstract class ResourceController extends BaseController implements ResourceCont
      */
     protected string $resource;
 
-    public function show($id): JsonResponse
+    public function show($id, int $responseCode = Response::HTTP_OK): JsonResponse
     {
         /** @var JsonResource $resource */
         $resource = new $this->resource($this->repository->show($id));
-        return $this->respondResource($resource);
+        return $this->respondResource($resource, $responseCode);
     }
 
     public function index(): JsonResponse
@@ -38,14 +39,13 @@ abstract class ResourceController extends BaseController implements ResourceCont
     public function store(): JsonResponse
     {
         $model = $this->repository->store(request()->post());
-        $model->refresh()->load($model->getEagerLoads());
-        return $this->respondResource(new $this->resource($model), 201);
+        return $this->show($model->getKey(), 201);
     }
 
     public function update($id): JsonResponse
     {
-        $this->repository->update($id, request()->post());
-        return $this->respondNull();
+        $model = $this->repository->update($id, request()->post());
+        return $this->show($model->getKey());
     }
 
     public function destroy($id): JsonResponse
