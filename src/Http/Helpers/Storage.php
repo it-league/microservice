@@ -130,7 +130,7 @@ class Storage
             static::ttl,
             fn() => self::call('get', 'info/' . $fileId)
         );
-        return $data['data'];
+        return Arr::get($data, 'data');
     }
 
     /**
