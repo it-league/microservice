@@ -55,6 +55,5 @@ final class Job implements ShouldQueue
     public function failed(Throwable $exception)
     {
         // TODO: разобраться с логированием
-        \Log::error($exception->getMessage());
     }
 }
