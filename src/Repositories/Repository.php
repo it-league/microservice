@@ -22,13 +22,12 @@ abstract class Repository implements RepositoryInterface
         $this->query = $model->newQuery();
     }
 
-
-    public function show($id): EntityModel
+    final public function show($id): EntityModel
     {
         return $this->query->withRelations()->findOrFail($id);
     }
 
-    public function index(): Arrayable
+    final public function index(): Arrayable
     {
         $query = $this->query->withRelations()->withSort()->withFilter();
         return request()->page('all') === true ? $query->get() : $query->getWithPage();
@@ -40,7 +39,7 @@ abstract class Repository implements RepositoryInterface
      * @return \ITLeague\Microservice\Models\EntityModel
      * @throws \Throwable
      */
-    public function store(array $attributes): EntityModel
+    final public function store(array $attributes): EntityModel
     {
         $attributes = $this->model->validateStore($attributes);
 
@@ -69,7 +68,7 @@ abstract class Repository implements RepositoryInterface
      * @return \ITLeague\Microservice\Models\EntityModel
      * @throws \Throwable
      */
-    public function update($id, array $attributes): EntityModel
+    final public function update($id, array $attributes): EntityModel
     {
         $attributes = $this->model->validateUpdate($attributes);
 
@@ -97,7 +96,7 @@ abstract class Repository implements RepositoryInterface
      * @return bool|null
      * @throws \Throwable
      */
-    public function destroy($id): ?bool
+    final public function destroy($id): ?bool
     {
         DB::beginTransaction();
 

@@ -34,7 +34,7 @@ abstract class CachingRepository implements RepositoryInterface
         $hash = md5("show:$id");
 
         return $this->cache->tags($this->tag)->remember(
-            "{$this->tag}:$hash" . $this->useLocale ? ":{$this->locale}" : '',
+            "{$this->tag}:$hash" . ($this->useLocale ? ":{$this->locale}" : ''),
             $this->ttl,
             fn() => $this->repository->show($id)
         );
@@ -45,7 +45,7 @@ abstract class CachingRepository implements RepositoryInterface
         $hash = md5('index:' . json_encode(request()->query()));
 
         return $this->cache->tags($this->tag)->remember(
-            "{$this->tag}:$hash" . $this->useLocale ? ":{$this->locale}" : '',
+            "{$this->tag}:$hash" . ($this->useLocale ? ":{$this->locale}" : ''),
             $this->ttl,
             fn() => $this->repository->index()
         );
@@ -84,5 +84,10 @@ abstract class CachingRepository implements RepositoryInterface
         $tags = array_filter($this->relatedTags);
         array_push($tags, $this->tag);
         $this->cache->tags($tags)->flush();
+    }
+
+    public function getLocale(): string
+    {
+        return $this->locale;
     }
 }

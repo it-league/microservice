@@ -16,7 +16,7 @@ abstract class RestorableRepository extends Repository implements RestorableRepo
      * @return bool|null
      * @throws \Throwable
      */
-    public function restore($id): ?bool
+    final public function restore($id): ?bool
     {
         DB::beginTransaction();
 
