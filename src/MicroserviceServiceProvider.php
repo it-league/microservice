@@ -41,12 +41,16 @@ class MicroserviceServiceProvider extends ServiceProvider
     public function register(): void
     {
         app()->configure('queue');
+        app()->configure('logging');
+
         $this->mergeConfigFrom(
             __DIR__ . '/../config/rabbitmq_options.php',
             'queue.connections.rabbitmq.options'
         );
 
         $this->mergeConfigFrom(__DIR__ . '/../config/microservice.php', 'microservice');
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/logstash.php', 'logging.channels.logstash');
 
         app()->register(RedisServiceProvider::class);
         app()->register(LaravelQueueRabbitMQServiceProvider::class);

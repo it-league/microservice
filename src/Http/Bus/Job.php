@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use ITLeague\Microservice\Facades\MicroserviceBus;
 use ITLeague\Microservice\Models\User;
 use Throwable;
@@ -33,6 +34,8 @@ final class Job implements ShouldQueue
 
     public function handle(): void
     {
+        Log::info('Event listened', ['event' => $this->event, 'data' => $this->data]);
+
         if ($this->user instanceof Authenticatable) {
             Auth::setUser($this->user);
         }

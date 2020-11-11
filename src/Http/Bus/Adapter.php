@@ -4,6 +4,8 @@
 namespace ITLeague\Microservice\Http\Bus;
 
 
+use Illuminate\Support\Facades\Log;
+
 final class Adapter
 {
     private array $handlers = [];
@@ -11,6 +13,8 @@ final class Adapter
 
     public function push(string $event, array $data): void
     {
+        Log::info('Event pushed', ['event' => $event, 'data' => $data]);
+
         dispatch(new Job($data, $event))->onQueue($event);
     }
 
