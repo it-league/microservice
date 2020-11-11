@@ -23,7 +23,7 @@ class TranslatedAttributesScope implements Scope
         $languageDefaultCode = language(true)->code;
 
         $builder->join($languageTable, $model->getTable() . '.language_id', '=', $languageTable . '.id');
-        $builder->where($languageTable . '.code', app()->getLocale());
+        $builder->where($languageTable . '.code', $locale);
 
         if ($locale !== $languageDefaultCode) {
             $builder->orWhere($languageTable . '.code', $languageDefaultCode)->orderBy($languageTable . '.default', 'asc');

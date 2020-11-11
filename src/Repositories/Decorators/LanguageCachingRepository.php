@@ -25,11 +25,7 @@ final class LanguageCachingRepository implements LanguageRepositoryInterface
 
     public function default(): Language
     {
-        return $this->cache->tags(static::tag)->remember(
-            self::tag . ":default",
-            static::ttl,
-            fn() => $this->repository->default()
-        );
+        return $this->all()->firstWhere('default', true);
     }
 
     public function all(): Collection

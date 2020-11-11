@@ -14,6 +14,9 @@ abstract class CachingRepository implements RepositoryInterface
     protected RepositoryInterface $repository;
     protected Cache\Repository $cache;
 
+    private string $locale;
+    protected bool $useLocale = true;
+
     protected int $ttl = 60;
     protected string $tag = '';
 
@@ -23,14 +26,15 @@ abstract class CachingRepository implements RepositoryInterface
     {
         $this->repository = $repository;
         $this->cache = app('cache.store');
+        $this->locale = app()->getLocale();
     }
 
     final public function show($id): EntityModel
     {
-        $hash = md5("{$this->tag}:$id");
+        $hash = md5("show:$id");
 
         return $this->cache->tags($this->tag)->remember(
-            "{$this->tag}:$hash",
+            "{$this->tag}:$hash" . $this->useLocale ? ":{$this->locale}" : '',
             $this->ttl,
             fn() => $this->repository->show($id)
         );
@@ -38,10 +42,10 @@ abstract class CachingRepository implements RepositoryInterface
 
     final public function index(): Arrayable
     {
-        $hash = md5(json_encode(request()->query()));
+        $hash = md5('index:' . json_encode(request()->query()));
 
         return $this->cache->tags($this->tag)->remember(
-            "{$this->tag}:$hash",
+            "{$this->tag}:$hash" . $this->useLocale ? ":{$this->locale}" : '',
             $this->ttl,
             fn() => $this->repository->index()
         );

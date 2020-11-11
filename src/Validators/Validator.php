@@ -41,6 +41,17 @@ class Validator extends \Illuminate\Validation\Validator
         return true;
     }
 
+    public function validateArrayOrUuid(string $attribute, $value, array $parameters, $validator): bool
+    {
+        if (! is_array($value)) {
+            if (! $this->validateUuid($attribute, $value)) {
+                $this->addFailure($attribute, 'uuid', []);
+            }
+        }
+
+        return true;
+    }
+
     public function validateSortIn(string $attribute, $value, array $parameters, $validator): bool
     {
         $this->requireParameterCount(1, $parameters, 'sort_in');
