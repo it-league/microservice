@@ -51,7 +51,7 @@ trait ValidatableEntity
         return Arr::get(static::$staticClassesRules, static::class . '.' . $method, []);
     }
 
-    private static function validate(array $data, array $rules): array
+    protected static function validate(array $data, array $rules): array
     {
         return Validator::make($data, $rules)->validate();
     }
@@ -71,7 +71,7 @@ trait ValidatableEntity
         return $this->validate($data, self::rules('filter'));
     }
 
-    public function validateUpdate(array $data): array
+    public function validateUpdate($id, array $data): array
     {
         return $this->validate($data, self::rules('update'));
     }
