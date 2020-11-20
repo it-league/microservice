@@ -19,7 +19,7 @@ trait HasLogger
                 'Model created',
                 [
                     'model' => get_class($model),
-                    'id' => $model->getKey(),
+                    'id' => (string) $model->getKey(),
                     'user' => Auth::id(),
                     'ip' => Request::ip(),
                     'lang' => App::getLocale(),
@@ -32,7 +32,7 @@ trait HasLogger
                 'Model updated',
                 [
                     'model' => get_class($model),
-                    'id' => $model->getKey(),
+                    'id' => (string) $model->getKey(),
                     'user' => Auth::id(),
                     'ip' => Request::ip(),
                     'lang' => App::getLocale(),
@@ -45,7 +45,7 @@ trait HasLogger
                 'Model deleted',
                 [
                     'model' => get_class($model),
-                    'id' => $model->getKey(),
+                    'id' => (string) $model->getKey(),
                     'user' => Auth::id(),
                     'ip' => Request::ip(),
                     'lang' => App::getLocale(),
