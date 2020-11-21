@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use ITLeague\Microservice\Http\Helpers\Storage;
+use ITLeague\Microservice\Facades\Storage;
 
 class FileAttributeObserver
 {

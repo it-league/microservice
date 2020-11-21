@@ -16,6 +16,7 @@ use Illuminate\Support\ServiceProvider;
 use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
 use ITLeague\Microservice\Exceptions\Handler;
 use ITLeague\Microservice\Http\Bus\Adapter;
+use ITLeague\Microservice\Http\Services\StorageService;
 use ITLeague\Microservice\Mixins\BlueprintMixin;
 use ITLeague\Microservice\Mixins\BuilderMixin;
 use ITLeague\Microservice\Mixins\RequestMixin;
@@ -73,12 +74,8 @@ class MicroserviceServiceProvider extends ServiceProvider
         /* Команда artisan создания миграции для таблицы языков */
         $this->commands([LanguageTableCreate::class]);
 
-        $this->app->singleton(
-            'microservice.bus',
-            function ($app) {
-                return new Adapter();
-            }
-        );
+        $this->app->singleton('microservice.bus', fn ($app) => new Adapter());
+        $this->app->singleton('storage.service', fn() => new StorageService(config('microservice.storage')));
 
         /* Обработчик ошибок */
         $this->app->singleton(

@@ -6,11 +6,43 @@ namespace ITLeague\Microservice\Traits;
 
 trait CompositePrimaryModel
 {
+    /**
+     * Set the keys for a select query.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function setKeysForSelectQuery($query)
+    {
+        $keys = $this->getKeyName();
+        if (! is_array($keys)) {
+            return parent::setKeysForSelectQuery($query);
+        }
+
+        foreach ($keys as $keyName) {
+            $query->where($keyName, '=', $this->getKeyForSelectQuery($keyName));
+        }
+
+        return $query;
+    }
+
+    /**
+     * Get the primary key value for a select query.
+     *
+     * @return mixed
+     */
+    protected function getKeyForSelectQuery(?string $keyName = null)
+    {
+        $keyName = $keyName ?? $this->getKeyName();
+        return $this->original[$keyName] ?? $this->getAttribute($keyName);
+    }
 
     /**
      * Set the keys for a save update query.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSaveQuery($query)
@@ -36,14 +68,7 @@ trait CompositePrimaryModel
      */
     protected function getKeyForSaveQuery(?string $keyName = null)
     {
-        if (is_null($keyName)) {
-            $keyName = $this->getKeyName();
-        }
-
-        if (isset($this->original[$keyName])) {
-            return $this->original[$keyName];
-        }
-
-        return $this->getAttribute($keyName);
+        $keyName = $keyName ?? $this->getKeyName();
+        return $this->original[$keyName] ?? $this->getAttribute($keyName);
     }
 }

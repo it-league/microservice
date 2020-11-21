@@ -41,6 +41,6 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
             'scope' => 'super-admin'
         ]);
 
-        Http::fake([config('microservice.storage_uri') . '*' => Http::response(null, 204)]);
+        Http::fake([config('microservice.services.storage.base_uri') . '*' => Http::response(null, 204)]);
     }
 }

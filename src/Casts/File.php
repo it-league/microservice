@@ -7,7 +7,7 @@ namespace ITLeague\Microservice\Casts;
 use DB;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Str;
-use ITLeague\Microservice\Http\Helpers\Storage;
+use ITLeague\Microservice\Facades\Storage;
 
 class File implements CastsAttributes
 {

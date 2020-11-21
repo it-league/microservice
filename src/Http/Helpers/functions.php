@@ -36,7 +36,7 @@ if (! function_exists('file_url')) {
      */
     function file_url(string $fileId, bool $inline = true)
     {
-        $url = config('microservice.api_uri') . '/' . config('microservice.storage_prefix') . '/file/' . $fileId;
+        $url = config('microservice.api_uri') . '/' . config('microservice.storage.prefix') . '/file/' . $fileId;
         if ($inline !== true) {
             $url .= '?disposition=' . HeaderUtils::DISPOSITION_ATTACHMENT;
         }
