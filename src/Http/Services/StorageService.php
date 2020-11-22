@@ -109,7 +109,7 @@ class StorageService extends BaseService
         return Cache::remember(
             $this->getCacheKey($fileId),
             self::ttl,
-            fn() => $this->query('get', "info/$fileId")
+            fn() => (array)$this->query('get', "info/$fileId")
         );
     }
 }
