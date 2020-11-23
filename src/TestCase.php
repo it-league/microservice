@@ -28,19 +28,35 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
         parent::setUp();
         $this->faker = Faker::create();
 
-        $this->user = new User([
-            'id' => $this->faker->uuid,
-            'scope' => 'user'
-        ]);
-        $this->admin = new User([
-            'id' => $this->faker->uuid,
-            'scope' => 'admin'
-        ]);
-        $this->superAdmin = new User([
-            'id' => $this->faker->uuid,
-            'scope' => 'super-admin'
-        ]);
+        $this->user = new User(
+            [
+                'id' => $this->faker->uuid,
+                'scope' => 'user'
+            ]
+        );
+        $this->admin = new User(
+            [
+                'id' => $this->faker->uuid,
+                'scope' => 'admin'
+            ]
+        );
+        $this->superAdmin = new User(
+            [
+                'id' => $this->faker->uuid,
+                'scope' => 'super-admin'
+            ]
+        );
 
-        Http::fake([config('microservice.services.storage.base_uri') . '*' => Http::response(null, 204)]);
+        $storageBaseUri = config('microservice.services.storage.base_uri') . '/' . config('microservice.storage.prefix') . '/';
+        Http::fake(
+            [
+                $storageBaseUri . 'upload' => Http::response([], 200),
+                $storageBaseUri . 'upload/force' => Http::response([], 200),
+                $storageBaseUri . 'info/*' => Http::response([], 200),
+                $storageBaseUri . 'confirm/*' => Http::response(null, 204),
+                $storageBaseUri . 'delete/*' => Http::response(null, 204),
+                $storageBaseUri . 'permission/*' => Http::response(null, 204),
+            ]
+        );
     }
 }
