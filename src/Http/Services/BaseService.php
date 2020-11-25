@@ -29,7 +29,7 @@ abstract class BaseService
             $client->withHeaders(
                 [
                     'x-authenticated-userid' => Auth::id(),
-                    'x-authenticated-scope' => trim(implode(' ', (array)Auth::user()->scope))
+                    'x-authenticated-scope' => trim(implode(' ',  (array)(Auth::user()->scope ?? [])))
                 ]
             );
         }
