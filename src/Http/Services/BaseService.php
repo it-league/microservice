@@ -87,7 +87,7 @@ abstract class BaseService
             }
 
             /** @var \Illuminate\Http\Client\Response $response */
-            $response = $client->{$method}(($private ? 'private/' : 'api/') . $path, $data)->throw();
+            $response = $client->{$method}(($private ? 'private/' : 'api/') . "{$this->config['prefix']}/$path", $data)->throw();
             return $response->json('data', $response->json()) ?? null;
         } catch (RequestException $e) {
             $error = $e->response->json('error');
