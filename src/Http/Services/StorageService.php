@@ -50,7 +50,7 @@ class StorageService extends BaseService
      */
     public function permission(string $fileId, ?array $permission = []): void
     {
-        $this->query('put', "permission/$fileId", ['permission' => $permission]);
+        $this->apiCall('put', "permission/$fileId", ['permission' => $permission]);
         self::clearCache($fileId);
     }
 
@@ -75,7 +75,7 @@ class StorageService extends BaseService
      */
     public function upload($file, ?string $filename = null, ?string $path = 'upload'): array
     {
-        return $this->query('post', 'upload', ['path' => $path], ['file' => ['name' => $filename, 'content' => $file]]);
+        return $this->apiCall('post', 'upload', ['path' => $path], ['file' => ['name' => $filename, 'content' => $file]]);
     }
 
     /**
@@ -90,7 +90,7 @@ class StorageService extends BaseService
      */
     public function uploadForce($file, ?string $filename = null, ?string $path = 'upload', ?array $permission = [], ?array $sizes = []): array
     {
-        return $this->query(
+        return $this->privateCall(
             'post',
             'force/upload',
             ['path' => $path, 'permission' => $permission, 'sizes' => $sizes],
@@ -109,7 +109,7 @@ class StorageService extends BaseService
         return Cache::remember(
             $this->getCacheKey($fileId),
             self::ttl,
-            fn() => (array)$this->query('get', "info/$fileId")
+            fn() => (array)$this->apiCall('get', "info/$fileId")
         );
     }
 }

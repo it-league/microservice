@@ -2,12 +2,12 @@
 
 namespace ITLeague\Microservice\Http\Services;
 
+use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Exception;
 use Illuminate\Support\Str;
 
 abstract class BaseService
@@ -19,8 +19,9 @@ abstract class BaseService
         $this->config = $config;
     }
 
-    protected function client(): PendingRequest {
-        $client = Http::baseUrl("{$this->config['base_uri']}/{$this->config['prefix']}")
+    protected function client(): PendingRequest
+    {
+        $client = Http::baseUrl("{$this->config['base_uri']}")
             ->timeout($this->config['timeout'])
             ->withHeaders(['Accept-Language' => app()->getLocale()])
             ->withoutVerifying();
@@ -29,7 +30,7 @@ abstract class BaseService
             $client->withHeaders(
                 [
                     'x-authenticated-userid' => Auth::id(),
-                    'x-authenticated-scope' => trim(implode(' ',  (array)(Auth::user()->scope ?? [])))
+                    'x-authenticated-scope' => trim(implode(' ', (array)(Auth::user()->scope ?? [])))
                 ]
             );
         }
@@ -46,10 +47,38 @@ abstract class BaseService
      * @return array|null
      * @throws \Exception
      */
-    protected function query(string $method, string $path, array $data = [], array $files = []): ?array
+    protected function apiCall(string $method, string $path, array $data = [], array $files = []): ?array
+    {
+        return $this->call($method, $path, $data, $files);
+    }
+
+    /**
+     * @param string $method
+     * @param string $path
+     * @param array $data
+     * @param array $files
+     *
+     * @return array|null
+     * @throws \Exception
+     */
+    protected function privateCall(string $method, string $path, array $data = [], array $files = []): ?array
+    {
+        return $this->call($method, $path, $data, $files, true);
+    }
+
+    /**
+     * @param string $method
+     * @param string $path
+     * @param array $data
+     * @param array $files
+     * @param bool $private
+     *
+     * @return array|null
+     * @throws \Exception
+     */
+    protected function call(string $method, string $path, array $data = [], array $files = [], bool $private = false): ?array
     {
         try {
-
             $client = $this->client();
 
             foreach ($files as $field => $file) {
@@ -58,9 +87,8 @@ abstract class BaseService
             }
 
             /** @var \Illuminate\Http\Client\Response $response */
-            $response = $client->{$method}($path, $data)->throw();
+            $response = $client->{$method}(($private ? 'private/' : 'api/') . $path, $data)->throw();
             return $response->json('data', $response->json()) ?? null;
-
         } catch (RequestException $e) {
             $error = $e->response->json('error');
 
