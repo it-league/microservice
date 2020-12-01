@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 abstract class BaseService
 {
@@ -92,10 +93,14 @@ abstract class BaseService
         } catch (RequestException $e) {
             $error = $e->response->json('error');
 
-            throw new Exception(
-                Arr::get($error, 'detail', $e->getMessage()),
-                Arr::get($error, 'status', 500)
-            );
+            $detail = Arr::get($error, 'detail', $e->getMessage());
+            $status = Arr::get($error, 'status', 500);
+
+            if (is_array($detail)) {
+                throw ValidationException::withMessages($detail);
+            } else {
+                throw new Exception($detail, $status);
+            }
         }
     }
 
