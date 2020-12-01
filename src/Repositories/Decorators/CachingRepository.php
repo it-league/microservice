@@ -6,6 +6,7 @@ namespace ITLeague\Microservice\Repositories\Decorators;
 
 use Illuminate\Cache;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\Auth;
 use ITLeague\Microservice\Models\EntityModel;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 
@@ -16,6 +17,8 @@ abstract class CachingRepository implements RepositoryInterface
 
     private string $locale;
     protected bool $useLocale = true;
+    protected bool $useUserScope = false;
+    protected bool $useUserId = false;
 
     protected int $ttl = 60;
     protected string $tag = '';
@@ -31,7 +34,22 @@ abstract class CachingRepository implements RepositoryInterface
 
     protected function hash(string $key): string
     {
-        return md5($key . ($this->useLocale ? ":{$this->locale}" : ''));
+        if ($this->useLocale) {
+            $key .= ":{$this->locale}";
+        }
+
+        if ($this->useUserScope && Auth::check()) {
+            $scope = array_filter((array)Auth::user()->scope ?? ['user']);
+            $scope = count($scope) > 0 ? implode(',', $scope) : 'user';
+            $key .= ":{$scope}";
+        }
+
+        if ($this->useUserId && Auth::check()) {
+            $id = Auth::user()->id;
+            $key .= ":{$id}";
+        }
+
+        return md5($key);
     }
 
     final public function show($id): EntityModel
