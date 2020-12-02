@@ -4,10 +4,11 @@
 namespace ITLeague\Microservice\Facades;
 
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static void push(string $event, array $data)
+ * @method static void push(string $event, array|JsonResource $data)
  * @method static void listen(array|string $events, string $handler)
  */
 

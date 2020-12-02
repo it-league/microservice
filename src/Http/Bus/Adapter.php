@@ -4,6 +4,8 @@
 namespace ITLeague\Microservice\Http\Bus;
 
 
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 final class Adapter
@@ -11,8 +13,16 @@ final class Adapter
     private array $handlers = [];
 
 
-    public function push(string $event, array $data): void
+    /**
+     * @param string $event
+     * @param array|JsonResource $data
+     */
+    public function push(string $event, $data): void
     {
+        if($data instanceof JsonResource) {
+            $data = Arr::get($data->toResponse(request())->getData(true), $data::$wrap);
+        }
+
         Log::info('Event pushed', ['event' => $event, 'data' => $data]);
 
         dispatch(new Job($data, $event))->onQueue($event);
