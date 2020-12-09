@@ -10,7 +10,6 @@ use Illuminate\Auth\GenericUser;
  * @property int $id
  * @property array $scope
  */
-
 class User extends GenericUser
 {
     final public function hasScope($scope): bool
@@ -26,5 +25,10 @@ class User extends GenericUser
     final public function isSuperAdmin(): bool
     {
         return $this->hasScope('super-admin');
+    }
+
+    final public static function fake(): self
+    {
+        return new static(['id' => '00000000-0000-0000-0000-000000000000']);
     }
 }
