@@ -28,7 +28,7 @@ class DB
                 IF row (NEW.*) IS DISTINCT FROM row (OLD.*) THEN
                     NEW.created_at = OLD.created_at;
                     NEW.created_by = OLD.created_by;
-                    NEW.updated_at = CURRENT_TIMESTAMP;
+                    NEW.updated_at = LOCALTIMESTAMP;
 
                     IF (NEW.deleted_at IS NOT NULL) THEN
                         IF (OLD.deleted_at IS NULL) THEN
@@ -36,7 +36,7 @@ class DB
                             IF (NEW.deleted_by IS NULL) THEN
                                 RAISE EXCEPTION \'null value in column "deleted_by" violates not-null constraint\' USING ERRCODE = \'23502\';
                             END IF;
-                            NEW.deleted_at = CURRENT_TIMESTAMP;
+                            NEW.deleted_at = LOCALTIMESTAMP;
 
                         ELSE
                             RAISE EXCEPTION \'Can`t change deleted row!\' USING ERRCODE = \'23001\';
@@ -98,8 +98,8 @@ class DB
             'CREATE OR REPLACE FUNCTION on_insert()
             RETURNS TRIGGER AS $$
             BEGIN
-                NEW.created_at = CURRENT_TIMESTAMP;
-                NEW.updated_at = CURRENT_TIMESTAMP;
+                NEW.created_at = LOCALTIMESTAMP;
+                NEW.updated_at = LOCALTIMESTAMP;
                 IF (NEW.deleted_at IS NOT NULL) THEN
                     RAISE EXCEPTION \'cant`t create deleted row\' USING ERRCODE = \'23001\';
                 END IF;
@@ -129,7 +129,7 @@ class DB
                 RETURNS TRIGGER AS $$
                 BEGIN
                    IF row(NEW.*) IS DISTINCT FROM row(OLD.*) THEN
-                      UPDATE ' . $dataTableName . ' d SET updated_at = CURRENT_TIMESTAMP WHERE d.' . $dataKey . ' = NEW.' . $foreignKey . ';
+                      UPDATE ' . $dataTableName . ' d SET updated_at = LOCALTIMESTAMP WHERE d.' . $dataKey . ' = NEW.' . $foreignKey . ';
                    END IF;
                    RETURN NEW;
                 END;
