@@ -6,7 +6,10 @@ namespace ITLeague\Microservice\Traits;
 
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-/** @mixin \ITLeague\Microservice\Models\EntityModel */
+/**
+ * @property-read \Illuminate\Database\Eloquent\Model|null $translation
+ * @mixin \ITLeague\Microservice\Models\EntityModel
+ */
 trait TranslatableModel
 {
 
@@ -26,8 +29,12 @@ trait TranslatableModel
 
     public function setTranslation(array $fields): void
     {
-        $languageId = $this->translation->language_id ?? language()->firstWhere('code', app()->getLocale())->id;
-        $this->translation()->updateOrCreate(['language_id' => $languageId], $fields);
+        if ($this->translation) {
+            $this->translation->update($fields);
+        } else {
+            $fields['language_id'] = language()->firstWhere('code', app()->getLocale())->id;
+            $this->setRelation('translation', $this->translation()->create($fields));
+        }
     }
 
     abstract public function translation(): HasOne;

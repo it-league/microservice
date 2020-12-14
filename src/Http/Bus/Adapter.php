@@ -7,6 +7,7 @@ namespace ITLeague\Microservice\Http\Bus;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Queue;
 
 final class Adapter
 {
@@ -24,8 +25,7 @@ final class Adapter
         }
 
         Log::info('Event pushed', ['event' => $event, 'data' => $data]);
-
-        dispatch(new Job($data, $event))->onQueue($event);
+        Queue::pushOn($event, new Job($data, $event));
     }
 
     public function getHandlers(string $event): array

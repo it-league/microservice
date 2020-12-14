@@ -30,6 +30,8 @@ trait CompositePrimaryModel
     /**
      * Get the primary key value for a select query.
      *
+     * @param string|null $keyName
+     *
      * @return mixed
      */
     protected function getKeyForSelectQuery(?string $keyName = null)

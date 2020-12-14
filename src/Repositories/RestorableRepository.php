@@ -18,19 +18,6 @@ abstract class RestorableRepository extends Repository implements RestorableRepo
      */
     public function restore($id): ?bool
     {
-        DB::beginTransaction();
-
-        try {
-            $result = $this->query->onlyTrashed()->findOrFail($id)->restore();
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            // TODO: действия при rollback
-
-            throw $e;
-        }
-
-        return $result;
+        return DB::transaction(fn() => $this->query->onlyTrashed()->findOrFail($id)->restore());
     }
 }

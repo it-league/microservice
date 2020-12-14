@@ -12,9 +12,9 @@ interface RepositoryInterface
 
     public function index(): Arrayable;
 
-    public function store(array $fields): EntityModel;
+    public function store(array $attributes): EntityModel;
 
-    public function update($id, array $fields): EntityModel;
+    public function update($id, array $attributes): EntityModel;
 
     public function destroy($id): ?bool;
 }

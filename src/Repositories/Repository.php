@@ -5,7 +5,6 @@ namespace ITLeague\Microservice\Repositories;
 
 
 use DB;
-use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
 use ITLeague\Microservice\Models\EntityModel;
@@ -42,23 +41,7 @@ abstract class Repository implements RepositoryInterface
     public function store(array $attributes): EntityModel
     {
         $attributes = $this->model->validateStore($attributes);
-
-        DB::beginTransaction();
-
-        try {
-            $model = new $this->model($attributes);
-            $model->save();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            // TODO: действия при rollback
-
-            throw $e;
-        }
-
-        return $model;
+        return DB::transaction(fn() => (new $this->model($attributes))->save());
     }
 
     /**
@@ -71,23 +54,7 @@ abstract class Repository implements RepositoryInterface
     public function update($id, array $attributes): EntityModel
     {
         $attributes = $this->model->validateUpdate($id, $attributes);
-
-        DB::beginTransaction();
-
-        try {
-            $model = $this->show($id);
-            $model->fill($attributes)->save();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            // TODO: действия при rollback
-
-            throw $e;
-        }
-
-        return $model;
+        return DB::transaction(fn() => $this->show($id)->update($attributes));
     }
 
     /**
@@ -98,21 +65,6 @@ abstract class Repository implements RepositoryInterface
      */
     public function destroy($id): ?bool
     {
-        DB::beginTransaction();
-
-        try {
-            $model = $this->show($id);
-            $result = $model->delete();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            // TODO: действия при rollback
-
-            throw $e;
-        }
-
-        return $result;
+        return DB::transaction(fn() => $this->show($id)->delete());
     }
 }

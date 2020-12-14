@@ -25,7 +25,9 @@ use ITLeague\Microservice\Models\User;
 use ITLeague\Microservice\Repositories\Decorators\LanguageCachingRepository;
 use ITLeague\Microservice\Repositories\Interfaces\LanguageRepositoryInterface;
 use ITLeague\Microservice\Repositories\LanguageRepository;
+use ITLeague\Microservice\Routing\UrlGenerator;
 use ITLeague\Microservice\Validators\Validator;
+use Laravel\Lumen\Application;
 use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
 use LumenMiddlewareTrimOrConvertString\TrimStrings;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Console\ConsumeCommand;
@@ -44,13 +46,8 @@ class MicroserviceServiceProvider extends ServiceProvider
         app()->configure('queue');
         app()->configure('logging');
 
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/rabbitmq_options.php',
-            'queue.connections.rabbitmq.options'
-        );
-
+        $this->mergeConfigFrom(__DIR__ . '/../config/rabbitmq_options.php', 'queue.connections.rabbitmq.options');
         $this->mergeConfigFrom(__DIR__ . '/../config/microservice.php', 'microservice');
-
         $this->mergeConfigFrom(__DIR__ . '/../config/logstash.php', 'logging.channels.logstash');
 
         app()->register(RedisServiceProvider::class);
@@ -71,10 +68,13 @@ class MicroserviceServiceProvider extends ServiceProvider
             fn($translator, $data, $rules, $messages) => new Validator($translator, $data, $rules, $messages)
         );
 
+        /* Небольшое изменение в регулярке для корректного разбора роутов с проверкой uuid */
+        $this->app->singleton('url', fn() => new UrlGenerator(Application::getInstance()));
+
         /* Команда artisan создания миграции для таблицы языков */
         $this->commands([LanguageTableCreate::class]);
 
-        $this->app->singleton('microservice.bus', fn ($app) => new Adapter());
+        $this->app->singleton('microservice.bus', fn($app) => new Adapter());
         $this->app->singleton('storage.service', fn() => new StorageService(config('microservice.storage')));
 
         /* Обработчик ошибок */
@@ -121,7 +121,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         // новый тип колонки в базе postgres
         PostgresGrammar::macro(
             'typeUuidArray',
-            fn (Fluent $column) => 'uuid[]'
+            fn(Fluent $column) => 'uuid[]'
         );
 
         /* Права доступа по-умолчанию */

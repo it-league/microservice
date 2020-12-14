@@ -66,7 +66,7 @@ abstract class EntityModel extends Model
      */
     final public function getUnfilledAttribute(string $attribute)
     {
-        return $this->unfilled[$attribute] ?? null;
+        return Arr::get($this->unfilled, $attribute);
     }
 
     final public function getUnfilledAttributes(): array

@@ -70,16 +70,16 @@ abstract class CachingRepository implements RepositoryInterface
         );
     }
 
-    final public function store(array $fields): EntityModel
+    final public function store(array $attributes): EntityModel
     {
-        $model = $this->repository->store($fields);
+        $model = $this->repository->store($attributes);
         $this->flush();
         return $model;
     }
 
-    final public function update($id, array $fields): EntityModel
+    final public function update($id, array $attributes): EntityModel
     {
-        $model = $this->repository->update($id, $fields);
+        $model = $this->repository->update($id, $attributes);
         $this->flush();
         return $model;
     }

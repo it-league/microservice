@@ -22,11 +22,12 @@ class TranslatedAttributesScope implements Scope
         $languageTable = language(true)->getTable();
         $languageDefaultCode = language(true)->code;
 
-        $builder->join($languageTable, $model->getTable() . '.language_id', '=', $languageTable . '.id');
-        $builder->where($languageTable . '.code', $locale);
+        $builder->join($languageTable, $model->getTable() . '.language_id', '=', $languageTable . '.id')
+            ->where($languageTable . '.code', $locale)
+            ->select($model->getTable() . '.*');
 
         if ($locale !== $languageDefaultCode) {
-            $builder->orWhere($languageTable . '.code', $languageDefaultCode)->orderBy($languageTable . '.default', 'asc');
+            $builder->orWhere($languageTable . '.code', $languageDefaultCode)->orderBy($languageTable . '.default');
         }
     }
 }

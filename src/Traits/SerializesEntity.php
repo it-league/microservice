@@ -18,9 +18,8 @@ trait SerializesEntity
 
     /**
      * @return array
-     * @throws \ReflectionException
      */
-    public function __serialize()
+    public function __serialize(): array
     {
         $values = $this->model__serialize();
 
@@ -56,9 +55,8 @@ trait SerializesEntity
      * @param array $values
      *
      * @return array
-     * @throws \ReflectionException
      */
-    public function __unserialize(array $values)
+    public function __unserialize(array $values): array
     {
         $properties = (new ReflectionClass($this))->getProperties();
 
