@@ -41,7 +41,13 @@ abstract class Repository implements RepositoryInterface
     public function store(array $attributes): EntityModel
     {
         $attributes = $this->model->validateStore($attributes);
-        return DB::transaction(fn() => (new $this->model($attributes))->save());
+        return DB::transaction(
+            function () use ($attributes) {
+                $model = new $this->model($attributes);
+                $model->save();
+                return $model;
+            }
+        );
     }
 
     /**
@@ -54,7 +60,14 @@ abstract class Repository implements RepositoryInterface
     public function update($id, array $attributes): EntityModel
     {
         $attributes = $this->model->validateUpdate($id, $attributes);
-        return DB::transaction(fn() => $this->show($id)->update($attributes));
+
+        return DB::transaction(
+            function () use ($id, $attributes) {
+                $model = $this->show($id);
+                $model->update($attributes);
+                return $model;
+            }
+        );
     }
 
     /**
