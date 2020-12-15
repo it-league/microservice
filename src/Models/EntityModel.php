@@ -4,7 +4,6 @@
 namespace ITLeague\Microservice\Models;
 
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
@@ -16,7 +15,6 @@ abstract class EntityModel extends Model
     use SerializesEntity;
     use ValidatableEntity;
 
-
     /**
      * @var \ITLeague\Microservice\Repositories\Decorators\CachingRepository|string
      */
@@ -26,11 +24,6 @@ abstract class EntityModel extends Model
      * @var \ITLeague\Microservice\Repositories\Repository|string
      */
     protected static string $repositoryClass;
-
-    /**
-     * @var \Illuminate\Database\Eloquent\Factories\HasFactory|string
-     */
-    protected static string $translationClass;
 
     private const closureProperties = ['filters', 'sorts', 'rules'];
     private array $unfilled = [];
@@ -104,12 +97,5 @@ abstract class EntityModel extends Model
         }
 
         return null;
-    }
-
-    protected static function newFactory()
-    {
-        if (static::$translationClass) {
-            return Factory::factoryForModel(get_called_class())->has(static::$translationClass::factory(), 'translation');
-        }
     }
 }
