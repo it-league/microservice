@@ -97,9 +97,13 @@ abstract class EntityModel extends Model
         return $this->sorts;
     }
 
-    public static function repository(): RepositoryInterface
+    public static function repository(): ?RepositoryInterface
     {
-        return new static::$cachingRepositoryClass(new static::$repositoryClass(new static()));
+        if (static::$cachingRepositoryClass && static::$repositoryClass) {
+            return new static::$cachingRepositoryClass(new static::$repositoryClass(new static()));
+        }
+
+        return null;
     }
 
     protected static function newFactory()
