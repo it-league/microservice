@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 trait TranslatableModel
 {
-
     public static function bootTranslatableModel(): void
     {
         static::saved(
