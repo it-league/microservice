@@ -14,7 +14,9 @@ trait HasLogger
 {
     public static function bootHasLogger()
     {
-        static::registerLogger();
+        if (app()->environment() !== 'testing') {
+            static::registerLogger();
+        }
     }
 
     private static function info(self $model): array

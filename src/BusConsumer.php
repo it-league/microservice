@@ -74,6 +74,10 @@ class BusConsumer extends Consumer
                     }
 
                     $this->runJob($job, $connectionName, $options);
+
+                    if ($this->supportsAsyncSignals()) {
+                        $this->resetTimeoutHandler();
+                    }
                 }
             );
         }
