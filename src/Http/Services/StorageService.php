@@ -35,7 +35,7 @@ class StorageService extends BaseService
     {
         $data = $this->info($fileId);
         if (Arr::get($data, 'confirmed') === true) {
-            throw ValidationException::withMessages([$fileId => 'File is already confirmed!']);
+            throw ValidationException::withMessages([$fileId => __('File is already confirmed')]);
         }
 
         MicroserviceBus::push('file.confirm', ['id' => $fileId, 'permission' => $permission, 'sizes' => $sizes]);

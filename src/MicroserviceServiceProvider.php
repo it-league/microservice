@@ -137,6 +137,8 @@ class MicroserviceServiceProvider extends ServiceProvider
             'admin',
             fn(User $user) => $user->isAdmin()
         );
+
+        $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
     }
 
     public function boot()

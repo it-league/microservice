@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\RelationNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use ITLeague\Microservice\Traits\ApiResponse;
@@ -36,33 +37,33 @@ class Handler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param \Throwable $exception
+     * @param \Throwable $e
      *
      * @return void
      *
      * @throws \Exception
      */
-    public function report(Throwable $exception)
+    public function report(Throwable $e)
     {
-        parent::report($exception);
+        parent::report($e);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Throwable $exception
+     * @param \Throwable $e
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $e)
     {
         if (config('app.debug') === false) {
-            return $this->renderApiException($exception);
+            return $this->renderApiException($e);
         }
 
-        return parent::render($request, $exception);
+        return parent::render($request, $e);
     }
 
     /**
@@ -70,7 +71,7 @@ class Handler extends ExceptionHandler
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    private function renderApiException(Throwable $exception)
+    private function renderApiException(Throwable $exception): JsonResponse
     {
         $code = $exception->getCode();
         $detail = $exception->getMessage();
@@ -81,10 +82,10 @@ class Handler extends ExceptionHandler
             $code = Response::HTTP_FORBIDDEN;
         } elseif ($exception instanceof ModelNotFoundException || $exception instanceof FileNotFoundException) {
             $code = Response::HTTP_NOT_FOUND;
-            $detail = 'Entity not found!';
+            $detail = __('Entity not found');
         } elseif ($exception instanceof NotFoundHttpException) {
             $code = Response::HTTP_NOT_FOUND;
-            $detail = 'Endpoint not found';
+            $detail = __('Endpoint not found');
         } elseif ($exception instanceof ValidationException) {
             $code = Response::HTTP_UNPROCESSABLE_ENTITY;
             $detail = $exception->errors();
@@ -93,7 +94,7 @@ class Handler extends ExceptionHandler
         }
 
         return $this->respondError(
-            $detail ?: 'Unexpected error. Try later',
+            $detail ?: __('Unexpected error. Try later'),
             $code ?: Response::HTTP_INTERNAL_SERVER_ERROR
         );
     }
