@@ -16,7 +16,7 @@ class LocalizationMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $locale = $request->getPreferredLanguage(language()->pluck('code')->toArray());
+        $locale = $request->getPreferredLanguage();
 
         app()->setLocale($locale);
 
