@@ -3,6 +3,7 @@
 namespace ITLeague\Microservice\Http\Middleware;
 
 use Closure;
+use Illuminate\Database\QueryException;
 
 class LocalizationMiddleware
 {
@@ -16,8 +17,13 @@ class LocalizationMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $locale = $request->getPreferredLanguage();
+        try {
+            $available = language()->pluck('code')->toArray();
+        } catch (QueryException $e) {
+            $available = null;
+        }
 
+        $locale = $request->getPreferredLanguage($available);
         app()->setLocale($locale);
 
         $response = $next($request);
