@@ -37,7 +37,7 @@
 	"validation.gte.string": "Количество символов в поле :attribute должно быть :value или больше.",
 	"validation.gte.array": "Количество элементов в поле :attribute должно быть :value или больше.",
 	"validation.image": "Поле :attribute должно быть изображением.",
-	"validation.validation.in": "Выбранное значение для :attribute ошибочно.",
+	"validation.in": "Выбранное значение для :attribute ошибочно.",
 	"validation.in_array": "Поле :attribute не существует в :other.",
 	"validation.integer": "Поле :attribute должно быть целым числом.",
 	"validation.ip": "Поле :attribute должно быть действительным IP-адресом.",
