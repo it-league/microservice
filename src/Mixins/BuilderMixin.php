@@ -20,12 +20,15 @@ class BuilderMixin
             $filter = $model->validateFilter(request()->filter());
 
             $keyName = $model->getKeyName();
-            $keyValue = Arr::get($filter, $keyName);
 
-            if (is_array($keyValue)) {
-                $this->whereIn($keyName, $keyValue);
-            } elseif (! is_null($keyValue)) {
-                $this->whereKey($keyValue);
+            if (! is_array($keyName) && ! is_null($keyName)) {
+                $keyValue = Arr::get($filter, $keyName);
+
+                if (is_array($keyValue)) {
+                    $this->whereIn($keyName, $keyValue);
+                } elseif (! is_null($keyValue)) {
+                    $this->whereKey($keyValue);
+                }
             }
 
             foreach ($model->getFilters() as $key => $closure) {
