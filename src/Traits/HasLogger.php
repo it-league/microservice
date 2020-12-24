@@ -23,7 +23,7 @@ trait HasLogger
     {
         return [
             'model' => get_class($model),
-            'id' => (string)$model->getKey(),
+            'attributes' => json_encode($model->getAttributes()),
             'user' => Auth::id(),
             'ip' => Request::ip(),
             'lang' => App::getLocale(),

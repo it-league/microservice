@@ -34,7 +34,7 @@ final class Job implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info('Event listened', ['event' => $this->event, 'data' => $this->data]);
+        Log::info('Event listened', ['event' => $this->event, 'data' => json_encode($this->data)]);
 
         if ($this->user instanceof Authenticatable) {
             Auth::setUser($this->user);

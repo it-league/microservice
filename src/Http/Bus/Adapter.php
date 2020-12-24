@@ -24,7 +24,7 @@ final class Adapter
             $data = Arr::get($data->toResponse(request())->getData(true), $data::$wrap);
         }
 
-        Log::info('Event pushed', ['event' => $event, 'data' => $data]);
+        Log::info('Event pushed', ['event' => $event, 'data' => json_encode($data)]);
         Queue::pushOn($event, new Job($data, $event));
     }
 
