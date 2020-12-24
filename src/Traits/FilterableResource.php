@@ -22,7 +22,7 @@ trait FilterableResource
             $requestFields = request()->fields();
             $validatedFields = is_null($requestFields) ? $fields : Validator::make(
                 ['fields' => $requestFields],
-                ['fields' => 'lt:1|filled|array|in:' . implode(',', $fields)]
+                ['fields' => 'filled|array|in:' . implode(',', $fields)]
             )->validate()['fields'];
         }
 
