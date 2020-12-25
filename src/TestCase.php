@@ -59,4 +59,28 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
             ]
         );
     }
+
+    public function user(): array
+    {
+        return [
+            'x-authenticated-userid' => $this->user->id,
+            'x-authenticated-scope' => $this->user->scope
+        ];
+    }
+
+    public function admin(): array
+    {
+        return [
+            'x-authenticated-userid' => $this->admin->id,
+            'x-authenticated-scope' => $this->admin->scope
+        ];
+    }
+
+    public function superAdmin(): array
+    {
+        return [
+            'x-authenticated-userid' => $this->superAdmin->id,
+            'x-authenticated-scope' => $this->superAdmin->scope
+        ];
+    }
 }

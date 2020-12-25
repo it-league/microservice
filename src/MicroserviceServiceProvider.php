@@ -145,18 +145,12 @@ class MicroserviceServiceProvider extends ServiceProvider
     {
         $this->app['auth']->viaRequest(
             'api',
-            function ($request) {
-                if (! $request->hasHeader('x-authenticated-userid')) {
-                    return null;
-                }
-
-                return new User(
-                    [
-                        'id' => $request->header('x-authenticated-userid'),
-                        'scope' => explode(' ', $request->header('x-authenticated-scope')),
-                    ]
-                );
-            }
+            fn(\Laravel\Lumen\Http\Request $request) => $request->hasHeader('x-authenticated-userid') ? new User(
+                [
+                    'id' => $request->header('x-authenticated-userid'),
+                    'scope' => explode(' ', $request->header('x-authenticated-scope')),
+                ]
+            ) : null
         );
 
         app()->middleware(
