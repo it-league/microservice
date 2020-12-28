@@ -31,19 +31,19 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
         $this->user = new User(
             [
                 'id' => $this->faker->uuid,
-                'scope' => 'user'
+                'scope' => ['user']
             ]
         );
         $this->admin = new User(
             [
                 'id' => $this->faker->uuid,
-                'scope' => 'admin'
+                'scope' => ['admin']
             ]
         );
         $this->superAdmin = new User(
             [
                 'id' => $this->faker->uuid,
-                'scope' => 'super-admin'
+                'scope' => ['super-admin']
             ]
         );
 
@@ -58,29 +58,5 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
                 $storageBaseUri . 'permission/*' => Http::response(null, 204),
             ]
         );
-    }
-
-    public function user(): array
-    {
-        return [
-            'x-authenticated-userid' => $this->user->id,
-            'x-authenticated-scope' => $this->user->scope
-        ];
-    }
-
-    public function admin(): array
-    {
-        return [
-            'x-authenticated-userid' => $this->admin->id,
-            'x-authenticated-scope' => $this->admin->scope
-        ];
-    }
-
-    public function superAdmin(): array
-    {
-        return [
-            'x-authenticated-userid' => $this->superAdmin->id,
-            'x-authenticated-scope' => $this->superAdmin->scope
-        ];
     }
 }

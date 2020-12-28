@@ -28,12 +28,7 @@ abstract class BaseService
             ->withoutVerifying();
 
         if (Auth::check()) {
-            $client->withHeaders(
-                [
-                    'x-authenticated-userid' => Auth::id(),
-                    'x-authenticated-scope' => trim(implode(' ', (array)(Auth::user()->scope ?? [])))
-                ]
-            );
+            $client->withHeaders(Auth::user()->header());
         }
 
         return $client;

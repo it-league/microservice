@@ -28,6 +28,7 @@ use ITLeague\Microservice\Repositories\LanguageRepository;
 use ITLeague\Microservice\Routing\UrlGenerator;
 use ITLeague\Microservice\Validators\Validator;
 use Laravel\Lumen\Application;
+use Laravel\Lumen\Http;
 use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
 use LumenMiddlewareTrimOrConvertString\TrimStrings;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Console\ConsumeCommand;
@@ -43,12 +44,7 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        app()->configure('queue');
-        app()->configure('logging');
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/rabbitmq_options.php', 'queue.connections.rabbitmq.options');
         $this->mergeConfigFrom(__DIR__ . '/../config/microservice.php', 'microservice');
-        $this->mergeConfigFrom(__DIR__ . '/../config/logstash.php', 'logging.channels.logstash');
 
         app()->register(RedisServiceProvider::class);
         app()->register(LaravelQueueRabbitMQServiceProvider::class);
@@ -57,11 +53,12 @@ class MicroserviceServiceProvider extends ServiceProvider
             app()->register(LumenGeneratorServiceProvider::class);
         }
 
-        /* Подключение репозитория для работы с языками */
-        $this->app->singleton(
-            LanguageRepositoryInterface::class,
-            fn() => new LanguageCachingRepository(new LanguageRepository(new Language()))
-        );
+        $this->registerTranslations();
+        $this->registerBus();
+        $this->registerDefaultGates();
+        $this->registerStorage();
+        $this->registerLogging();
+
 
         /* Расширение штатного валидатора */
         $this->app['validator']->resolver(
@@ -71,17 +68,42 @@ class MicroserviceServiceProvider extends ServiceProvider
         /* Небольшое изменение в регулярке для корректного разбора роутов с проверкой uuid */
         $this->app->singleton('url', fn() => new UrlGenerator(Application::getInstance()));
 
-        /* Команда artisan создания миграции для таблицы языков */
-        $this->commands([LanguageTableCreate::class]);
-
-        $this->app->singleton('microservice.bus', fn($app) => new Adapter());
-        $this->app->singleton('storage.service', fn() => new StorageService(config('microservice.storage')));
-
         /* Обработчик ошибок */
         $this->app->singleton(
             ExceptionHandler::class,
             Handler::class
         );
+
+        /* Расширения для фасадов */
+        Request::mixin(new RequestMixin());
+        Blueprint::mixin(new BlueprintMixin());
+        Builder::mixin(new BuilderMixin());
+
+        // новый тип колонки в базе postgres
+        PostgresGrammar::macro(
+            'typeUuidArray',
+            fn(Fluent $column) => 'uuid[]'
+        );
+    }
+
+    private function registerTranslations(): void
+    {
+        $this->app->singleton(
+            LanguageRepositoryInterface::class,
+            fn() => new LanguageCachingRepository(new LanguageRepository(new Language()))
+        );
+
+        $this->commands([LanguageTableCreate::class]);
+
+
+        $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
+    }
+
+    private function registerBus(): void
+    {
+        app()->configure('queue');
+        $this->mergeConfigFrom(__DIR__ . '/../config/rabbitmq_options.php', 'queue.connections.rabbitmq.options');
+        $this->app->singleton('microservice.bus', fn($app) => new Adapter());
 
         if ($this->app->runningInConsole()) {
             $this->app->singleton(
@@ -112,40 +134,13 @@ class MicroserviceServiceProvider extends ServiceProvider
 
             $this->commands([ConsumeCommand::class]);
         }
-
-        /* Расширения для фасадов */
-        Request::mixin(new RequestMixin());
-        Blueprint::mixin(new BlueprintMixin());
-        Builder::mixin(new BuilderMixin());
-
-        // новый тип колонки в базе postgres
-        PostgresGrammar::macro(
-            'typeUuidArray',
-            fn(Fluent $column) => 'uuid[]'
-        );
-
-        /* Права доступа по-умолчанию */
-        Gate::before(
-            function (User $user, string $ability) {
-                if ($user->isSuperAdmin()) {
-                    return true;
-                }
-                return null;
-            }
-        );
-        Gate::define(
-            'admin',
-            fn(User $user) => $user->isAdmin()
-        );
-
-        $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
     }
 
     public function boot()
     {
         $this->app['auth']->viaRequest(
             'api',
-            fn(\Laravel\Lumen\Http\Request $request) => $request->hasHeader('x-authenticated-userid') ? new User(
+            fn(Http\Request $request) => $request->hasHeader('x-authenticated-userid') ? new User(
                 [
                     'id' => $request->header('x-authenticated-userid'),
                     'scope' => explode(' ', $request->header('x-authenticated-scope')),
@@ -159,5 +154,32 @@ class MicroserviceServiceProvider extends ServiceProvider
                 ConvertEmptyStringsToNull::class
             ]
         );
+    }
+
+    private function registerDefaultGates(): void
+    {
+        Gate::before(
+            function (User $user, string $ability) {
+                if ($user->isSuperAdmin()) {
+                    return true;
+                }
+                return null;
+            }
+        );
+        Gate::define(
+            'admin',
+            fn(User $user) => $user->isAdmin()
+        );
+    }
+
+    private function registerStorage(): void
+    {
+        $this->app->singleton('storage.service', fn() => new StorageService(config('microservice.storage')));
+    }
+
+    private function registerLogging()
+    {
+        app()->configure('logging');
+        $this->mergeConfigFrom(__DIR__ . '/../config/logstash.php', 'logging.channels.logstash');
     }
 }
