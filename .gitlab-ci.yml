@@ -4,4 +4,4 @@ stages:
 deploy:
   stage: deploy
   script:
-     - curl "https://__token__:${CI_JOB_TOKEN}@gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/composer"
+     - curl "https://__token__:${CI_JOB_TOKEN}@gitlab.05.ru/api/v4/projects/${CI_PROJECT_ID}/packages/composer"
