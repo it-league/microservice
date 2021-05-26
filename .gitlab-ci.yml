@@ -4,4 +4,4 @@ stages:
 deploy:
   stage: deploy
   script:
-    - 'curl --header "Job-Token: $CI_JOB_TOKEN" --data branch=master "https://gitlab.05.ru/api/v4/projects/$CI_PROJECT_ID/packages/composer"'
+    - 'curl --data branch=master "https://__token__:n7XwSccgm6E-VndaEYhH@gitlab.05.ru/api/v4/projects/$CI_PROJECT_ID/packages/composer"'
