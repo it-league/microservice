@@ -1,9 +1,7 @@
-publish:
-  image: microservice:latest
-  stage: build
-  variables:
-    URL: "https://gitlab.05.ru/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
   script:
-    - response=$(curl -s -w "\n%{http_code}" --data branch=master $URL)
-    - code=$(echo "$response" | tail -n 1)
-    - body=$(echo "$response" | head -n 1)
+    - 'curl --header "Job-Token: $CI_JOB_TOKEN" --data tag=<tag> "https://gitlab.05.ru/api/v4/projects/$CI_PROJECT_ID/packages/composer"'
