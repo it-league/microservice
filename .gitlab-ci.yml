@@ -1,7 +1,6 @@
-stages:
-  - deploy
-
-deploy:
-  stage: deploy
+deploy_composer:
+  only:
+    - tags
+  stage: test
   script:
-     - curl --data branch=master "https://__token__:${CI_JOB_TOKEN}@gitlab.05.ru/api/v4/projects/${CI_PROJECT_ID}/packages/composer"
+    - curl -sS --show-error --fail --data tag=${CI_COMMIT_TAG} "https://__token__:${CI_JOB_TOKEN}@gitlab.05.ru/api/v4/projects/${CI_PROJECT_ID}/packages/composer"
