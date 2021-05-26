@@ -4,4 +4,4 @@ stages:
 deploy:
   stage: deploy
   script:
-    - 'curl --header "Job-Token: z1FzU2dDFkhrxFny1raB" --data branch=master "https://gitlab.05.ru/api/v4/projects/39/packages/composer"'
+    - 'curl --header "Job-Token: z1FzU2dDFkhrxFny1raB" --data tag=init "https://gitlab.05.ru/api/v4/projects/39/packages/composer"'
