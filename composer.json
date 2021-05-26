@@ -1,5 +1,5 @@
 {
-    "name": "itleague/microservice",
+    "name": "php/microservice",
     "description": "General library for microservices",
     "type": "library",
     "license": "MIT",
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^8.0",
         "ext-json": "*",
         "illuminate/redis": "^8.6",
         "laravel/lumen-framework": "^8.0",
