@@ -4,4 +4,4 @@ stages:
 deploy:
   stage: deploy
   script:
-    - Invoke-WebRequest -uri "https://@gitlab.05.ru/api/v4/projects/39/packages/composer?job_token=DGfVXS3Gs22d18ui7kPL" -Method Post -Body @{branch='master'}
+    - Invoke-WebRequest -uri "https://__token__:z1FzU2dDFkhrxFny1raB@gitlab.05.ru/api/v4/projects/39/packages/composer" -Method Post -Body @{branch='master'}
