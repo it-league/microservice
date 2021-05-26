@@ -4,7 +4,7 @@ publish:
   variables:
     URL: "https://gitlab.05.ru/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
   script:
-    - version="branch=master"
+    - version=$(echo "branch=master")
     - response=$(curl -s -w "\n%{http_code}" --data $version $URL)
     - code=$(echo "$response" | tail -n 1)
     - body=$(echo "$response" | head -n 1)
