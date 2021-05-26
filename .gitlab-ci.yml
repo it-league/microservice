@@ -4,4 +4,4 @@ stages:
 deploy:
   stage: deploy
   script:
-    - curl --data tag=${CI_COMMIT_TAG} "https://gitlab.05.ru/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
+    - Invoke-WebRequest -uri "https://@gitlab.05.ru/api/v4/projects/39/packages/composer?job_token=DGfVXS3Gs22d18ui7kPL" -Method Post -Body @{branch='master'}
