@@ -19,15 +19,16 @@ class TranslatedAttributesScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $locale = app()->getLocale();
-        $languageTable = language(true)->getTable();
-        $languageDefaultCode = language(true)->code;
+        $defaultLanguage = language(true);
+        $languageTable = $defaultLanguage->getTable();
+        $defaultLanguageCode = $defaultLanguage->code;
 
-        $builder->join($languageTable, $model->getTable() . '.language_id', '=', $languageTable . '.id')
-            ->where($languageTable . '.code', $locale)
-            ->select($model->getTable() . '.*');
+        $builder->join($languageTable, "{$model->getTable()}.language_id", '=', "$languageTable.id")
+            ->where("$languageTable.code", $locale)
+            ->select("{$model->getTable()}.*");
 
-        if ($locale !== $languageDefaultCode) {
-            $builder->orWhere($languageTable . '.code', $languageDefaultCode)->orderBy($languageTable . '.default');
+        if ($locale !== $defaultLanguage->code) {
+            $builder->orWhere("$languageTable.code", $defaultLanguage->code)->orderBy("$languageTable.default");
         }
     }
 }

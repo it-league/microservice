@@ -1,9 +1,9 @@
 <?php
 
-
 namespace ITLeague\Microservice\Traits;
 
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 trait TranslatableModel
 {
+    private bool $translationTableWasJoined = false;
+
     public static function bootTranslatableModel(): void
     {
         static::saved(
-            function (self $model) {
+            function (self $model): void {
                 $model->setTranslation($model->getUnfilledAttributes());
             }
         );
@@ -31,9 +33,43 @@ trait TranslatableModel
         if ($this->translation) {
             $this->translation->update($fields);
         } else {
-            $fields['language_id'] = language()->firstWhere('code', app()->getLocale())->id;
+            $fields['language_id'] = language()->firstWhere('code', app()->getLocale())->getKey();
             $this->setRelation('translation', $this->translation()->create($fields));
         }
+    }
+
+    public function getTranslationTable(): string
+    {
+        return $this->translation()->getRelated()->getTable();
+    }
+
+    public function scopeJoinTranslatableTable(Builder $builder): void
+    {
+        if ($this->translationTableWasJoined === false) {
+            $translationTable = $this->getTranslationTable();
+            $modelTable = $this->getTable();
+            $languageTable = language(true)->getTable();
+            $builder->join($translationTable, $this->translation()->getForeignKeyName(), "$modelTable.{$this->getKeyName()}")
+                ->join($languageTable, "$translationTable.language_id", "$languageTable.id")
+                ->where("$languageTable.code", app()->getLocale())
+                ->select("{$this->getTable()}.*");
+            $this->translationTableWasJoined = true;
+        }
+    }
+
+    public function scopeWhereTranslatable(Builder $builder, string $column, ?string $operator = null, string|int|null $value = null): void
+    {
+        $builder->joinTranslatableTable()->where("{$this->getTranslationTable()}.$column", $operator, $value);
+    }
+
+    public function scopeOrderByTranslatable(Builder $builder, string $column, string $direction = 'asc'): void
+    {
+        $builder->joinTranslatableTable()->orderBy("{$this->getTranslationTable()}.$column", $direction);
+    }
+
+    public function scopeOrderByDescTranslatable(Builder $builder, string $column): void
+    {
+        $builder->orderByTranslatable($column, 'desc');
     }
 
     abstract public function translation(): HasOne;

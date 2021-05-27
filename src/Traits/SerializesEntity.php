@@ -51,12 +51,7 @@ trait SerializesEntity
         return $values;
     }
 
-    /**
-     * @param array $values
-     *
-     * @return array
-     */
-    public function __unserialize(array $values): array
+    public function __unserialize(array $values): void
     {
         $properties = (new ReflectionClass($this))->getProperties();
 
@@ -87,7 +82,7 @@ trait SerializesEntity
             }
         }
 
-        return $this->model__unserialize(Arr::except($values, $closurePropertyNames));
+        $this->model__unserialize(Arr::except($values, $closurePropertyNames));
     }
 
 }
