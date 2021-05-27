@@ -1,10 +1,13 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
-trait CompositePrimaryModel
+use Illuminate\Database\Eloquent\Builder;
+
+/** @mixin \Illuminate\Database\Eloquent\Model */
+trait WithCompositePrimary
 {
     /**
      * Set the keys for a select query.
@@ -13,7 +16,7 @@ trait CompositePrimaryModel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function setKeysForSelectQuery($query)
+    protected function setKeysForSelectQuery($query): Builder
     {
         $keys = $this->getKeyName();
         if (! is_array($keys)) {
@@ -34,7 +37,7 @@ trait CompositePrimaryModel
      *
      * @return mixed
      */
-    protected function getKeyForSelectQuery(?string $keyName = null)
+    protected function getKeyForSelectQuery(?string $keyName = null): mixed
     {
         $keyName = $keyName ?? $this->getKeyName();
         return $this->original[$keyName] ?? $this->getAttribute($keyName);
@@ -47,7 +50,7 @@ trait CompositePrimaryModel
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function setKeysForSaveQuery($query)
+    protected function setKeysForSaveQuery($query): Builder
     {
         $keys = $this->getKeyName();
         if (! is_array($keys)) {
@@ -68,7 +71,7 @@ trait CompositePrimaryModel
      *
      * @return mixed
      */
-    protected function getKeyForSaveQuery(?string $keyName = null)
+    protected function getKeyForSaveQuery(?string $keyName = null): mixed
     {
         $keyName = $keyName ?? $this->getKeyName();
         return $this->original[$keyName] ?? $this->getAttribute($keyName);

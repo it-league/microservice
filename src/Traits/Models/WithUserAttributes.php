@@ -1,7 +1,7 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 use Auth;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,13 +32,13 @@ trait WithUserAttributes
     {
         static::creating(
             function (self $model): void {
-                $model->created_by = Auth::check() ? Auth::id() : null;
+                $model->created_by = auth()->check() ? auth()->id() : null;
                 $model->updated_by = $model->created_by;
             }
         );
         static::updating(
             function (self $model): void {
-                $model->updated_by = Auth::check() ? Auth::id() : null;
+                $model->updated_by = auth()->check() ? auth()->id() : null;
             }
         );
     }

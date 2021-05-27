@@ -1,7 +1,7 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
 use ITLeague\Microservice\Scopes\TranslatedAttributesScope;
@@ -9,7 +9,7 @@ use ITLeague\Microservice\Scopes\TranslatedAttributesScope;
 /** @mixin \Illuminate\Database\Eloquent\Model */
 trait ModelForTranslatedAttributes
 {
-    use CompositePrimaryModel;
+    use WithCompositePrimary;
 
     public static function bootModelForTranslatedAttributes(): void
     {

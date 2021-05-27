@@ -9,13 +9,13 @@ use Illuminate\Support\Arr;
 use ITLeague\Microservice\Repositories\Decorators\CachingRepository;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 use ITLeague\Microservice\Repositories\Repository;
-use ITLeague\Microservice\Traits\SerializesEntity;
-use ITLeague\Microservice\Traits\ValidatableEntity;
+use ITLeague\Microservice\Traits\Models\Serializable;
+use ITLeague\Microservice\Traits\Models\Validatable;
 
 abstract class EntityModel extends Model
 {
-    use SerializesEntity;
-    use ValidatableEntity;
+    use Serializable;
+    use Validatable;
 
     protected static string|CachingRepository $cachingRepositoryClass;
     protected static string|Repository $repositoryClass;

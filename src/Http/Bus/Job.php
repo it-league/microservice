@@ -29,7 +29,7 @@ final class Job implements ShouldQueue
     {
         $this->data = $data;
         $this->event = $event;
-        $this->user = Auth::check() ? Auth::user() : null;
+        $this->user = auth()->check() ? auth()->user() : null;
     }
 
     public function handle(): void
@@ -37,7 +37,7 @@ final class Job implements ShouldQueue
         Log::info('Event listened', ['event' => $this->event, 'data' => json_encode($this->data)]);
 
         if ($this->user instanceof Authenticatable) {
-            Auth::setUser($this->user);
+            auth()->setUser($this->user);
         }
 
         foreach (MicroserviceBus::getHandlers($this->event) as $handler) {

@@ -1,14 +1,14 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use ReflectionClass;
 
-trait SerializesEntity
+trait Serializable
 {
 
     use SerializesModels {

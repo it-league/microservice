@@ -41,8 +41,8 @@
 поле translation базовой сущности. При отсутствии необходимых переводов подтягиваются значения на языке по умолчанию.
 
 Для корректной работы функционала необходимо в модели базовой сущности подключить трейт 
-`ITLeague\Microservice\Traits\TranslatableModel`, а в модели с переводимыми полями - трейт
-`ITLeague\Microservice\Traits\ModelForTranslatedAttributes`
+`ITLeague\Microservice\Traits\Models\Translatable`, а в модели с переводимыми полями — трейт
+`ITLeague\Microservice\Traits\Models\ModelForTranslatedAttributes`
 
 Язык возвращаемых сущностей определяется заголовком запроса `Accept-Language`. Также в ответе присутствует
 заголовок `Content-Language`, который содержит двухбуквенный код используемого языка.
@@ -183,9 +183,9 @@ RabbitMQ используется для асинхронной передачи
 
 Есть 3 дополнительных метода класса `Blueprint`:
 * *softDeletesWithUserAttributes* - добавляет к таблице поля `deleted_at` и `deleted_by`. Для работы с этими полями 
-к модели надо подключить трейт `ITLeague\Microservice\Traits\SofDeletes`
+к модели надо подключить трейт `ITLeague\Microservice\Traits\Models\WithSoftDeleting`
 * *timestampsWithUserAttributes* - добавляет к таблице поля `created_at`, `created_by`, `updated_at` и `updated_by`. 
-К модели подключать трейт `ITLeague\Microservice\Traits\WithUserAttributes`. Подразумевается, что добавлять и
+К модели подключать трейт `ITLeague\Microservice\Traits\Models\WithUserAttributes`. Подразумевается, что добавлять и
 редактировать записи в таблице могут только авторизованные пользователи. Иначе необходимые поля к таблице 
 добавляются руками.
 * *foreignLanguageId* - добавляет к таблице с переводимыми полями сущности поле `language_id` со ссылкой 
@@ -202,8 +202,8 @@ RabbitMQ используется для асинхронной передачи
 Также есть большой класс-хелпер для добавления триггеров и функций к базе postgres `ITLeague\Microservice\Http\Helpers\DB`. 
 
 В первой миграции проекта желательно создать три функции: `createOnInsertFunction`, `createOnUpdateFunction` 
-(если будет использоваться  трейт `ITLeague\Microservice\Traits\WithUserAttributes`) и `createOnDeleteFunction` 
-(если будет использоваться трейт `ITLeague\Microservice\Traits\SofDeletes`). В дальнейшем для каждой 
+(если будет использоваться  трейт `ITLeague\Microservice\Traits\Models\WithUserAttributes`) и `createOnDeleteFunction` 
+(если будет использоваться трейт `ITLeague\Microservice\Traits\Models\WithSoftDeleting`). В дальнейшем для каждой 
 таблицы с сущностью необходимо добавлять триггеры `createOnUpdateTrigger`, `createOnInsertTrigger` 
 и `createOnDeleteTrigger`. также для каждой сущности рекомендуется добавлять запретить изменять 
 первичный ключ методом `setImmutablePrimary`.

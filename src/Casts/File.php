@@ -23,7 +23,7 @@ class File implements CastsAttributes
      */
     final public function get($model, string $key, $value, array $attributes): ?array
     {
-        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
+        /** @var \ITLeague\Microservice\Traits\Models\WithFileAttributes $model */
         if ($model->isFileAttributeMultiple($key)) {
             $value = $value ? json_decode($value, true) : [];
 
@@ -39,7 +39,7 @@ class File implements CastsAttributes
 
     final public function set($model, string $key, $value, array $attributes)
     {
-        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
+        /** @var \ITLeague\Microservice\Traits\Models\WithFileAttributes $model */
         if ($model->isFileAttributeMultiple($key)) {
             $json = json_encode($value);
             $model->mergeUnfilled(['original_' . $key => $value]);

@@ -1,20 +1,22 @@
 <?php
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use function language;
+
 /**
  * @property-read \Illuminate\Database\Eloquent\Model|null $translation
  * @mixin \ITLeague\Microservice\Models\EntityModel
  */
-trait TranslatableModel
+trait Translatable
 {
     private bool $translationTableWasJoined = false;
 
-    public static function bootTranslatableModel(): void
+    public static function bootTranslatable(): void
     {
         static::saved(
             function (self $model): void {
@@ -23,7 +25,7 @@ trait TranslatableModel
         );
     }
 
-    public function initializeTranslatableModel(): void
+    public function initializeTranslatable(): void
     {
         $this->with[] = 'translation';
     }

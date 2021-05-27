@@ -1,7 +1,7 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
 use Illuminate\Support\Arr;

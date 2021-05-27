@@ -24,8 +24,8 @@ abstract class BaseService
             ->withHeaders(['Accept-Language' => app()->getLocale()])
             ->withoutVerifying();
 
-        if (Auth::check()) {
-            $client->withHeaders(Auth::user()->header());
+        if (auth()->check()) {
+            $client->withHeaders(auth()->user()->header());
         }
 
         return $client;

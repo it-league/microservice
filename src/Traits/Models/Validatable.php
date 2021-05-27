@@ -1,14 +1,14 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
 use Illuminate\Support\Arr;
 use Validator;
 
 /** @mixin \ITLeague\Microservice\Models\EntityModel */
-trait ValidatableEntity
+trait Validatable
 {
     private static array $staticClassesRules;
     protected static array $rules;
@@ -30,7 +30,7 @@ trait ValidatableEntity
         'sort' => 'filled|string'
     ];
 
-    public static function bootValidatableEntity(): void
+    public static function bootValidatable(): void
     {
         static::bootRules();
     }

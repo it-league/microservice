@@ -21,7 +21,6 @@ class TranslatedAttributesScope implements Scope
         $locale = app()->getLocale();
         $defaultLanguage = language(true);
         $languageTable = $defaultLanguage->getTable();
-        $defaultLanguageCode = $defaultLanguage->code;
 
         $builder->join($languageTable, "{$model->getTable()}.language_id", '=', "$languageTable.id")
             ->where("$languageTable.code", $locale)

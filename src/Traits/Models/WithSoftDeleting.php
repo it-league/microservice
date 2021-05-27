@@ -1,11 +1,12 @@
 <?php
 
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
 
 use Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -14,24 +15,24 @@ use Illuminate\Support\Carbon;
  * @method static Builder|self whereDeletedAt(Carbon $value)
  * @method static Builder|self whereDeletedBy(string $value)
  */
-trait SoftDeletes
+trait WithSoftDeleting
 {
-    use \Illuminate\Database\Eloquent\SoftDeletes {
-        \Illuminate\Database\Eloquent\SoftDeletes::bootSoftDeletes as parentBootSoftDeletes;
+    use SoftDeletes {
+        SoftDeletes::bootSoftDeletes as parentBootSoftDeletes;
     }
 
-    public function initializeSoftDeletesTrait(): void
+    public function initializeWithSoftDeleting(): void
     {
         $this->mergeGuarded([$this->getDeletedAtColumn(), 'deleted_by']);
     }
 
-    public static function bootSoftDeletes(): void
+    public static function bootWithSoftDeleting(): void
     {
         static::parentBootSoftDeletes();
 
         static::deleting(
             function (self $model) {
-                $model->deleted_by = Auth::check() ? Auth::id() : null;
+                $model->deleted_by = auth()->check() ? auth()->id() : null;
             }
         );
 

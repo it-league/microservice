@@ -37,14 +37,14 @@ abstract class CachingRepository implements RepositoryInterface, RestorableRepos
             $key .= ":$this->locale";
         }
 
-        if ($this->useUserScope && Auth::check()) {
-            $scope = array_filter((array)Auth::user()->scope ?? ['user']);
+        if ($this->useUserScope && auth()->check()) {
+            $scope = array_filter((array)auth()->user()->scope ?? ['user']);
             $scope = count($scope) > 0 ? implode(',', $scope) : 'user';
             $key .= ":$scope";
         }
 
-        if ($this->useUserId && Auth::check()) {
-            $id = Auth::user()->id;
+        if ($this->useUserId && auth()->check()) {
+            $id = auth()->id();
             $key .= ":$id";
         }
 

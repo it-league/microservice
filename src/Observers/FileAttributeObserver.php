@@ -20,7 +20,7 @@ class FileAttributeObserver
      */
     public function deleted(Model $model): void
     {
-        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
+        /** @var \ITLeague\Microservice\Traits\Models\WithFileAttributes $model */
         $attributes = $model->getAttributes();
         foreach ($model->getFileAttributesSettings() as $attribute => $settings) {
             if ($model->isFileAttributeMultiple($attribute)) {
@@ -44,8 +44,8 @@ class FileAttributeObserver
      */
     public function saved(Model $model): void
     {
-        /** @var \ITLeague\Microservice\Traits\WithFileAttributes $model */
-        if (Auth::check() !== true) {
+        /** @var \ITLeague\Microservice\Traits\Models\WithFileAttributes $model */
+        if (!auth()->check()) {
             throw new AuthorizationException('Can`t save file without authorization');
         }
 

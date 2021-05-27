@@ -1,19 +1,16 @@
 <?php
 
-namespace ITLeague\Microservice\Traits;
+namespace ITLeague\Microservice\Traits\Models;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
 use JetBrains\PhpStorm\ArrayShape;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
  */
-trait HasLogger
+trait Loggable
 {
-    public static function bootHasLogger()
+    public static function bootLoggable()
     {
         if (app()->environment() !== 'testing') {
             static::registerLogger();
@@ -22,8 +19,8 @@ trait HasLogger
 
     #[ArrayShape([
         'model' => "string",
-        'attributes' => "false|string",
-        'user' => "int|null|string",
+        'attributes' => "string",
+        'user' => "string",
         'ip' => "null|string",
         'lang' => "string"
     ])]
@@ -33,9 +30,9 @@ trait HasLogger
         return [
             'model' => get_class($model),
             'attributes' => json_encode($model->getAttributes()),
-            'user' => Auth::id(),
-            'ip' => Request::ip(),
-            'lang' => App::getLocale(),
+            'user' => auth()->id(),
+            'ip' => request()->ip(),
+            'lang' => app()->getLocale(),
         ];
     }
 
