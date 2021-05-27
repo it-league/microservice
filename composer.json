@@ -1,0 +1,34 @@
+{
+    "name": "itleague/microservice",
+    "description": "General library for microservices",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Popov",
+            "email": "alexander.popov.gg@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "illuminate/redis": "^8.6",
+        "laravel/lumen-framework": "^8.0",
+        "opis/closure": "^3.6",
+        "predis/predis": "^1.1",
+        "barryvdh/laravel-ide-helper": "^2.7",
+        "flipbox/lumen-generator": "^8.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "phabloraylan/lumen-middleware-trim-or-convert-strings": "^1.0",
+        "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.0",
+        "agpopov/laravel-pg-extensions": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "ITLeague\\Microservice\\": "src/"
+        },
+        "files": [
+            "src/Http/Helpers/functions.php"
+        ]
+    }
+}
