@@ -4,22 +4,15 @@ namespace ITLeague\Microservice\Http\Middleware;
 
 use Closure;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 
 class LocalizationMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     *
-     * @return mixed
-     */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         try {
             $available = language()->pluck('code')->toArray();
-        } catch (QueryException $e) {
+        } catch (QueryException) {
             $available = null;
         }
 

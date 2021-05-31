@@ -78,12 +78,6 @@ class MicroserviceServiceProvider extends ServiceProvider
         Request::mixin(new RequestMixin());
         Blueprint::mixin(new BlueprintMixin());
         Builder::mixin(new BuilderMixin());
-
-        // новый тип колонки в базе postgres
-        PostgresGrammar::macro(
-            'typeUuidArray',
-            fn(Fluent $column) => 'uuid[]'
-        );
     }
 
     private function registerTranslations(): void
