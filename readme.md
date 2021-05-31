@@ -26,6 +26,7 @@
 * [barryvdh/laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper): библиотека формирует метафайлы для использования IDE. Также может формировать phpDoc для моделей. Помогает в разработке и описании моделей
 * [phabloraylan/lumen-middleware-trim-or-convert-strings](https://github.com/phabloraylan/lumen-middleware-trim-or-convert-strings): включает 2 middleware для триминга строк из запросов и превращения пустых строк в null
 * [vladimir-yuldashev/laravel-queue-rabbitmq](https://github.com/vyuldashev/laravel-queue-rabbitmq): библиотека для работы с очередями rabbitmq
+* [agpopov/laravel-pg-extensions](https://github.com/agpopov/laravel-pg-extensions): расширение для работы с PostgreSQL. Добавлено большое количество методов для миграции.
 
 # Многоязычность
 
@@ -181,40 +182,15 @@ RabbitMQ используется для асинхронной передачи
 
 ### Миграции
 
-Есть 3 дополнительных метода класса `Blueprint`:
-* *softDeletesWithUserAttributes* - добавляет к таблице поля `deleted_at` и `deleted_by`. Для работы с этими полями 
-к модели надо подключить трейт `ITLeague\Microservice\Traits\Models\WithSoftDeleting`
-* *timestampsWithUserAttributes* - добавляет к таблице поля `created_at`, `created_by`, `updated_at` и `updated_by`. 
-К модели подключать трейт `ITLeague\Microservice\Traits\Models\WithUserAttributes`. Подразумевается, что добавлять и
-редактировать записи в таблице могут только авторизованные пользователи. Иначе необходимые поля к таблице 
-добавляются руками.
-* *foreignLanguageId* - добавляет к таблице с переводимыми полями сущности поле `language_id` со ссылкой 
-на таблицу с языками. Предполагается, что сама таблица с языками уже должна быть создана (см. Многоязычность)
-
-Ещё есть новый тип поля `uuid[]`. Чаще всего имеет смысл использовать для хранения нескольких файлов.
-В коде выглядит как 
-
-`$table->addColumn('uuidArray', $column);`
-
-Для работы с полем также необходимо добавить функцию перевода данных читаемый формат: 
-`Helpers\DB:createJsonToArrayFunction()`. В rollback, соответственно, её удалять.
-
-Также есть большой класс-хелпер для добавления триггеров и функций к базе postgres `ITLeague\Microservice\Http\Helpers\DB`. 
-
-В первой миграции проекта желательно создать три функции: `createOnInsertFunction`, `createOnUpdateFunction` 
-(если будет использоваться  трейт `ITLeague\Microservice\Traits\Models\WithUserAttributes`) и `createOnDeleteFunction` 
-(если будет использоваться трейт `ITLeague\Microservice\Traits\Models\WithSoftDeleting`). В дальнейшем для каждой 
-таблицы с сущностью необходимо добавлять триггеры `createOnUpdateTrigger`, `createOnInsertTrigger` 
-и `createOnDeleteTrigger`. также для каждой сущности рекомендуется добавлять запретить изменять 
-первичный ключ методом `setImmutablePrimary`.
-
-Для таблиц с переводимыми полями, справочниками и промежуточными таблицами создаётся сначала функция методом 
-`createOnUpdateOrInsertRelationshipFunction`, а затем триггер `createOnUpdateOrInsertRelationshipTrigger`.
-Это необходимо для изменения `created`/`updated` полей родительской сущности. Для таблиц с переводимыми полями 
-рекомендуется создать триггер `createOnDeleteTrigger` для предотвращения удаления записей.
-
-Удалять в миграциях есть смысл только функции. Триггеры удаляются вместе с таблицей. Все соответствующие методы 
-в хелпере есть.
+Основная документация по расширению `laravel-pg-extensions` есть [тут](https://github.com/umbrellio/laravel-pg-extensions). Я взял собственный форк этого репозитория и добавил некоторые методы:
+* primaryUuid: добавляет первичный ключ типа uuid с автоматической генерацией значений
+* immutable: делает значения в колонке неизменяемыми. Особенно актуально для первичных ключей типа uuid
+* array: создаёт колонку типа `ARRAY`. Вместе с ней добавляется хранимая процедура для преобразования строки в формате json (которую может сформировать Laravel) в данные в формате ARRAY для PostgreSQL.
+* watchUpdate/watchInsert: добавляет поля `create_at`, `created_by`, `updated_at`, `updated_by` и триггер, который обновляет соответствующие даты средствами БД. Рекомендуется добавлять метод к таблицам основных сущностей
+* watchDelete: добавляет поля `deleted_at`, `deleted_by` и триггер, который запрещает удаление записей из таблицы. Также рекомендуется добавлять к таблицам основных сущностей
+* addWatchColumns: добавляет поля `create_at`, `created_by`, `updated_at`, `updated_by` без триггера. Имеет смысл вызывать отдельно, когда нужно сделать необязательными поля `created_by` и `updated_by`
+* addSoftDeleteColumns: просто добавляет поля `deleted_at` и `deleted_by`
+* touchParent: метод добавляет триггер, который меняет дату родительской записи при обновлении текущей записи с foreign key. Вызывается непосредственно для ForeignKeyDefinition.
 
 # Базовый абстрактный класс для тестов
 
