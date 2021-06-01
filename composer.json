@@ -1,5 +1,5 @@
 {
-    "name": "itleague/microservice",
+    "name": "php/microservice",
     "description": "General library for microservices",
     "type": "library",
     "license": "MIT",
