@@ -24,7 +24,7 @@ abstract class BaseService
             ->withoutVerifying();
 
         if (auth()->check()) {
-            $client->withHeaders(request()->header('Authorization'));
+            $client->withHeaders(['Authorization' => request()->header('Authorization')]);
         }
 
         return $client;
