@@ -4,19 +4,17 @@
 namespace ITLeague\Microservice\Scopes;
 
 
-use DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Support\Facades\DB;
+use ITLeague\Microservice\Casts\ArrayCast;
 
-class MultipleFileAttributeScope implements Scope
+class ArrayAttributeScope implements \Illuminate\Database\Eloquent\Scope
 {
-
     public function apply(Builder $builder, Model $model)
     {
-        /** @var \ITLeague\Microservice\Traits\Models\WithFileAttributes $model */
-        foreach ($model->getFileAttributesSettings() as $attribute => $settings) {
-            if ($model->isFileAttributeMultiple($attribute)) {
+        foreach ($model->getCasts() as $attribute => $cast) {
+            if (is_subclass_of($cast, ArrayCast::class)) {
                 if (is_null($builder->getQuery()->columns)) {
                     $builder->addSelect($model->getTable() . '.*');
                 }

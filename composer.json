@@ -28,7 +28,7 @@
             "ITLeague\\Microservice\\": "src/"
         },
         "files": [
-            "src/Http/Helpers/functions.php"
+            "src/functions.php"
         ]
     }
 }

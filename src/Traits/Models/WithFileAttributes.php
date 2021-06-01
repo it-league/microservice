@@ -5,7 +5,7 @@ namespace ITLeague\Microservice\Traits\Models;
 
 
 use Illuminate\Support\Arr;
-use ITLeague\Microservice\Casts\File;
+use ITLeague\Microservice\Casts\FileCast;
 use ITLeague\Microservice\Observers\FileAttributeObserver;
 use ITLeague\Microservice\Scopes\MultipleFileAttributeScope;
 
@@ -16,7 +16,7 @@ trait WithFileAttributes
     public function initializeWithFileAttributes(): void
     {
         foreach ($this->getFileAttributesSettings() as $attribute => $settings) {
-            $this->mergeCasts([$attribute => File::class]);
+            $this->mergeCasts([$attribute => FileCast::class]);
         }
     }
 

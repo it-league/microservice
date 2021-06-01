@@ -9,7 +9,7 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Str;
 use ITLeague\Microservice\Facades\Storage;
 
-class File implements CastsAttributes
+class FileCast implements CastsAttributes
 {
 
     /**
@@ -43,7 +43,7 @@ class File implements CastsAttributes
         if ($model->isFileAttributeMultiple($key)) {
             $json = json_encode($value);
             $model->mergeUnfilled(['original_' . $key => $value]);
-            return DB::raw("json_to_array('{$json}')::uuid[]");
+            return DB::raw("json_to_array('$json')::uuid[]");
         } else {
             return $value;
         }

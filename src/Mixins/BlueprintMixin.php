@@ -14,7 +14,7 @@ class BlueprintMixin
     {
         return function (): void {
             $this->unsignedTinyInteger('language_id');
-            $this->foreign('language_id')->references('id')->on('languages')->onDelete('restrict')->touchParent();
+            $this->foreign('language_id')->references('id')->on('languages')->onDelete('restrict');
         };
     }
 }
