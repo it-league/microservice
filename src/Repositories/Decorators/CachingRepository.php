@@ -6,7 +6,6 @@ namespace ITLeague\Microservice\Repositories\Decorators;
 
 use Illuminate\Cache;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Facades\Auth;
 use ITLeague\Microservice\Models\EntityModel;
 use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 use ITLeague\Microservice\Repositories\Interfaces\RestorableRepositoryInterface;
@@ -17,7 +16,7 @@ abstract class CachingRepository implements RepositoryInterface, RestorableRepos
 
     private string $locale;
     protected bool $useLocale = true;
-    protected bool $useUserScope = false;
+    protected bool $useUserRoles = false;
     protected bool $useUserId = false;
 
     protected int $ttl = 60;
@@ -37,10 +36,10 @@ abstract class CachingRepository implements RepositoryInterface, RestorableRepos
             $key .= ":$this->locale";
         }
 
-        if ($this->useUserScope && auth()->check()) {
-            $scope = array_filter((array)auth()->user()->scope ?? ['user']);
-            $scope = count($scope) > 0 ? implode(',', $scope) : 'user';
-            $key .= ":$scope";
+        if ($this->useUserRoles && auth()->check()) {
+            $roles = array_filter((array)auth()->user()->roles ?? ['user']);
+            $roles = count($roles) > 0 ? implode(',', $roles) : 'user';
+            $key .= ":$roles";
         }
 
         if ($this->useUserId && auth()->check()) {

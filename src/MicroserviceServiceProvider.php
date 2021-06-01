@@ -8,10 +8,8 @@ use Gate;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Grammars\PostgresGrammar;
 use Illuminate\Http\Request;
 use Illuminate\Redis\RedisServiceProvider;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\ServiceProvider;
 use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
 use ITLeague\Microservice\Exceptions\Handler;
@@ -28,7 +26,7 @@ use ITLeague\Microservice\Repositories\LanguageRepository;
 use ITLeague\Microservice\Routing\UrlGenerator;
 use ITLeague\Microservice\Validators\Validator;
 use Laravel\Lumen\Application;
-use Laravel\Lumen\Http;
+use Lcobucci\JWT\Configuration;
 use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
 use LumenMiddlewareTrimOrConvertString\TrimStrings;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Console\ConsumeCommand;
@@ -134,12 +132,26 @@ class MicroserviceServiceProvider extends ServiceProvider
     {
         $this->app['auth']->viaRequest(
             'api',
-            fn(Http\Request $request) => $request->hasHeader('x-authenticated-userid') ? new User(
-                [
-                    'id' => $request->header('x-authenticated-userid'),
-                    'scope' => explode(' ', $request->header('x-authenticated-scope')),
-                ]
-            ) : null
+            function ($request) {
+                if (!$request->header('Authorization')) {
+                    return null;
+                }
+
+                $jwt = str_replace('Bearer ', '', $request->header('Authorization'));
+
+                $configuration = Configuration::forUnsecuredSigner();
+                $token = $configuration->parser()->parse($jwt);
+                $claims = $token->claims()->all();
+
+                $id = data_get($claims, 'sub');
+                $roles = data_get($claims, 'realm_access.roles');
+
+                if (!$id || !$roles) {
+                    return null;
+                }
+
+                return new User(['id' => $id, 'roles' => $roles]);
+            }
         );
 
         app()->middleware(
@@ -154,15 +166,11 @@ class MicroserviceServiceProvider extends ServiceProvider
     {
         Gate::before(
             function (User $user, string $ability) {
-                if ($user->isSuperAdmin()) {
+                if ($user->isAdmin()) {
                     return true;
                 }
                 return null;
             }
-        );
-        Gate::define(
-            'admin',
-            fn(User $user) => $user->isAdmin()
         );
     }
 

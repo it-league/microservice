@@ -21,7 +21,6 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
     protected Generator $faker;
     protected User $user;
     protected User $admin;
-    protected User $superAdmin;
 
     public function setUp(): void
     {
@@ -31,19 +30,14 @@ abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
         $this->user = new User(
             [
                 'id' => $this->faker->uuid,
-                'scope' => ['user']
+                'roles' => ['user']
             ]
         );
+
         $this->admin = new User(
             [
                 'id' => $this->faker->uuid,
-                'scope' => ['admin']
-            ]
-        );
-        $this->superAdmin = new User(
-            [
-                'id' => $this->faker->uuid,
-                'scope' => ['super-admin']
+                'roles' => ['admin']
             ]
         );
 

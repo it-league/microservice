@@ -21,7 +21,8 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "phabloraylan/lumen-middleware-trim-or-convert-strings": "^1.0",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.0",
-        "agpopov/laravel-pg-extensions": "dev-master"
+        "agpopov/laravel-pg-extensions": "dev-master",
+        "lcobucci/jwt": "^4.1"
     },
     "autoload": {
         "psr-4": {

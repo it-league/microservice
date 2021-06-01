@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -25,7 +24,7 @@ abstract class BaseService
             ->withoutVerifying();
 
         if (auth()->check()) {
-            $client->withHeaders(auth()->user()->header());
+            $client->withHeaders(request()->header('Authorization'));
         }
 
         return $client;
