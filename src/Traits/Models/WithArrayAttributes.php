@@ -10,6 +10,7 @@ use ITLeague\Microservice\Scopes\ArrayAttributeScope;
 /** @mixin \Illuminate\Database\Eloquent\Model */
 trait WithArrayAttributes
 {
+    use WithUnfilledAttributes;
 
     public static function bootWithArrayAttributes(): void
     {

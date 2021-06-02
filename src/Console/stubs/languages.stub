@@ -18,9 +18,8 @@ class Create{{tableClassName}}Table extends Migration
             $table->char('code', 2)->unique();
             $table->string('language', 128)->unique();
             $table->boolean('default')->default(false);
+            $table->uniquePartial('"default"', 'languages_default_unique')->where('default', '=', true);
         });
-
-        DB::statement('create unique index on {{table}} ("default") where "default" = true');
     }
 
     /**

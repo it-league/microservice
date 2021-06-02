@@ -17,7 +17,7 @@ namespace Illuminate\Http {
 
     /**
      * @method static array|null sort()
-     * @method static array|string page(string $field = null)
+     * @method static array|int|bool page(string $field = null)
      * @method static array|string filter(string $field = null)
      * @method static array|null fields()
      */
@@ -30,9 +30,7 @@ namespace Illuminate\Http {
 namespace Illuminate\Database\Schema {
 
     /**
-     * @method void softDeletesWithUserAttributes()
-     * @method void timestampsWithUserAttributes()
-     * @method void foreignLanguageId()
+     * @method \Illuminate\Database\Schema\ForeignKeyDefinition foreignLanguageId()
      */
     class Blueprint
     {

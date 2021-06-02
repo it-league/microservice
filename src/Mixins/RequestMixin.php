@@ -50,7 +50,7 @@ class RequestMixin
 
     public function page(): Closure
     {
-        return function (?string $field = null) {
+        return function (?string $field = null): array|int|bool {
             if (! isset($this->cache['page'])) {
                 $cache = $this->cache;
 
@@ -77,7 +77,7 @@ class RequestMixin
 
     public function filter(): Closure
     {
-        return function (?string $field = null) {
+        return function (?string $field = null): array|string {
             if (! isset($this->cache['filter'])) {
                 $cache = $this->cache;
                 $cache['filter'] = (array)request()->query('filter');

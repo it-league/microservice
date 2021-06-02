@@ -6,6 +6,7 @@ use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Flipbox\LumenGenerator\LumenGeneratorServiceProvider;
 use Gate;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ use Laravel\Lumen\Application;
 use Lcobucci\JWT\Configuration;
 use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
 use LumenMiddlewareTrimOrConvertString\TrimStrings;
+use Umbrellio\Postgres\UmbrellioPostgresProvider;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Console\ConsumeCommand;
 use VladimirYuldashev\LaravelQueueRabbitMQ\LaravelQueueRabbitMQServiceProvider;
 
@@ -43,9 +45,13 @@ class MicroserviceServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/microservice.php', 'microservice');
+        app()->instance('path.config', app()->getConfigurationPath());
+        app()->instance('path.storage', app()->storagePath());
+        $this->app->singleton(ResponseFactory::class, fn ($app) => new \Laravel\Lumen\Http\ResponseFactory());
 
         app()->register(RedisServiceProvider::class);
         app()->register(LaravelQueueRabbitMQServiceProvider::class);
+        app()->register(UmbrellioPostgresProvider::class);
         if (config('app.debug') === true) {
             app()->register(IdeHelperServiceProvider::class);
             app()->register(LumenGeneratorServiceProvider::class);

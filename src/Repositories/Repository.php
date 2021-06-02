@@ -31,9 +31,6 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * @param array $attributes
-     *
-     * @return \ITLeague\Microservice\Models\EntityModel
      * @throws \Throwable
      */
     public function store(array $attributes): EntityModel
@@ -49,10 +46,6 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * @param $id
-     * @param array $attributes
-     *
-     * @return \ITLeague\Microservice\Models\EntityModel
      * @throws \Throwable
      */
     public function update(string|int $id, array $attributes): EntityModel

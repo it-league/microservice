@@ -11,48 +11,27 @@ use ITLeague\Microservice\Repositories\Interfaces\RepositoryInterface;
 use ITLeague\Microservice\Repositories\Repository;
 use ITLeague\Microservice\Traits\Models\Serializable;
 use ITLeague\Microservice\Traits\Models\Validatable;
+use ITLeague\Microservice\Traits\Models\WithUnfilledAttributes;
 
 abstract class EntityModel extends Model
 {
     use Serializable;
     use Validatable;
+    use WithUnfilledAttributes;
 
     protected static string|CachingRepository $cachingRepositoryClass;
     protected static string|Repository $repositoryClass;
 
     private const closureProperties = ['filters', 'sorts', 'rules'];
-    private array $unfilled = [];
 
     protected array $eagerLoad = [];
     protected array $filters = [];
     protected array $sorts = [];
 
-
-    /**
-     * Сохраняет переданные, но незаполненные в текущей модели атрибуты в спец. свойство
-     * Эти атрибуты могут использоваться, например, для сохранения релэйшенов или переводов через систему событий
-     *
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    final public function fill(array $attributes): self
-    {
-        $result = parent::fill($attributes);
-        $this->mergeUnfilled($attributes);
-        return $result;
-    }
-
-    final public function mergeUnfilled(array $attributes): void
-    {
-        $unfilled = count($attributes) ? Arr::except($attributes, array_keys($this->attributes)) : [];
-        $this->unfilled = array_merge($this->unfilled, $unfilled);
-    }
-
     /**
      * @return array
      */
-    final public function getEagerLoads(): array
+    public function getEagerLoads(): array
     {
         return $this->eagerLoad;
     }
@@ -60,24 +39,9 @@ abstract class EntityModel extends Model
     /**
      * @return array
      */
-    final public function getFilters(): array
+    public function getFilters(): array
     {
         return $this->filters;
-    }
-
-    /**
-     * @param string $attribute
-     *
-     * @return mixed|null
-     */
-    final public function getUnfilledAttribute(string $attribute)
-    {
-        return Arr::get($this->unfilled, $attribute);
-    }
-
-    final public function getUnfilledAttributes(): array
-    {
-        return $this->unfilled;
     }
 
     public function getSorts(): array

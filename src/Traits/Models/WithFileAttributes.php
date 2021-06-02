@@ -13,6 +13,8 @@ use ITLeague\Microservice\Scopes\MultipleFileAttributeScope;
 /** @mixin \Illuminate\Database\Eloquent\Model */
 trait WithFileAttributes
 {
+    use WithUnfilledAttributes;
+
     public function initializeWithFileAttributes(): void
     {
         foreach ($this->getFileAttributesSettings() as $attribute => $settings) {
