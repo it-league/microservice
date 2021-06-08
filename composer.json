@@ -22,6 +22,7 @@
         "phabloraylan/lumen-middleware-trim-or-convert-strings": "^1.0",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.0",
         "agpopov/laravel-pg-extensions": "dev-master",
+        "ukfast/laravel-health-check": "^1.12",
         "lcobucci/jwt": "^4.1"
     },
     "autoload": {

@@ -12,6 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use ITLeague\Microservice\Console\Commands\LanguageTableCreate;
 use ITLeague\Microservice\Exceptions\Handler;
 use ITLeague\Microservice\Http\Bus\Adapter;
@@ -30,6 +31,7 @@ use Laravel\Lumen\Application;
 use Lcobucci\JWT\Configuration;
 use LumenMiddlewareTrimOrConvertString\ConvertEmptyStringsToNull;
 use LumenMiddlewareTrimOrConvertString\TrimStrings;
+use UKFast\HealthCheck\HealthCheckServiceProvider;
 use Umbrellio\Postgres\UmbrellioPostgresProvider;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Console\ConsumeCommand;
 use VladimirYuldashev\LaravelQueueRabbitMQ\LaravelQueueRabbitMQServiceProvider;
@@ -47,7 +49,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/microservice.php', 'microservice');
         app()->instance('path.config', app()->getConfigurationPath());
         app()->instance('path.storage', app()->storagePath());
-        $this->app->singleton(ResponseFactory::class, fn ($app) => new \Laravel\Lumen\Http\ResponseFactory());
+        $this->app->singleton(ResponseFactory::class, fn($app) => new \Laravel\Lumen\Http\ResponseFactory());
 
         app()->register(RedisServiceProvider::class);
         app()->register(LaravelQueueRabbitMQServiceProvider::class);
@@ -62,6 +64,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->registerDefaultGates();
         $this->registerStorage();
         $this->registerLogging();
+        $this->registerHealthCheck();
 
 
         /* Расширение штатного валидатора */
@@ -138,12 +141,12 @@ class MicroserviceServiceProvider extends ServiceProvider
     {
         $this->app['auth']->viaRequest(
             'api',
-            function ($request) {
-                if (!$request->header('Authorization')) {
+            function (Request $request) {
+                if (! $request->hasHeader('Authorization')) {
                     return null;
                 }
 
-                $jwt = str_replace('Bearer ', '', $request->header('Authorization'));
+                $jwt = Str::substr($request->header('Authorization'), 7);
 
                 $configuration = Configuration::forUnsecuredSigner();
                 $token = $configuration->parser()->parse($jwt);
@@ -152,7 +155,7 @@ class MicroserviceServiceProvider extends ServiceProvider
                 $id = data_get($claims, 'sub');
                 $roles = data_get($claims, 'realm_access.roles');
 
-                if (!$id || !$roles) {
+                if (! $id || ! $roles) {
                     return null;
                 }
 
@@ -189,5 +192,11 @@ class MicroserviceServiceProvider extends ServiceProvider
     {
         app()->configure('logging');
         $this->mergeConfigFrom(__DIR__ . '/../config/logstash.php', 'logging.channels.logstash');
+    }
+
+    private function registerHealthCheck()
+    {
+        app()->register(HealthCheckServiceProvider::class);
+        app()->configure('healthcheck');
     }
 }

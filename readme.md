@@ -27,6 +27,7 @@
 * [phabloraylan/lumen-middleware-trim-or-convert-strings](https://github.com/phabloraylan/lumen-middleware-trim-or-convert-strings): включает 2 middleware для триминга строк из запросов и превращения пустых строк в null
 * [vladimir-yuldashev/laravel-queue-rabbitmq](https://github.com/vyuldashev/laravel-queue-rabbitmq): библиотека для работы с очередями rabbitmq
 * [agpopov/laravel-pg-extensions](https://github.com/agpopov/laravel-pg-extensions): расширение для работы с PostgreSQL. Добавлено большое количество методов для миграции.
+* [ukfast/laravel-health-check](https://github.com/ukfast/laravel-health-check): расширение для healthcheck'ов. Настраивается для каждого сервиса согласно документации. Можно использовать доп. классы `ITLeague\Microservice\HealthCheck\RedisHealthCheck` и `ITLeague\Microservice\HealthCheck\RabbitMQHealthCheck`
 
 # Многоязычность
 
@@ -59,12 +60,13 @@
 * `primaryUuid`: добавляет первичный ключ типа uuid с автоматической генерацией значений
 * `immutable`: делает значения в колонке неизменяемыми. Особенно актуально для первичных ключей типа uuid
 * `dropImmutable`: удаляет триггер неизменности значений колонки
-* `array`: создаёт колонку типа `ARRAY`. Вместе с ней добавляется хранимая процедура для преобразования строки в формате json (которую может сформировать Laravel) в данные в формате ARRAY для PostgreSQL.
+* `array`: создаёт поле типа `ARRAY`. Вместе с ней добавляется хранимая процедура для преобразования строки в формате json (которую может сформировать Laravel) в данные в формате ARRAY для PostgreSQL.
 * `watchUpdate`/`watchInsert`: добавляет поля `create_at`, `created_by`, `updated_at`, `updated_by` и триггер, который обновляет соответствующие даты средствами БД. Рекомендуется добавлять метод к таблицам основных сущностей
 * `watchDelete`: добавляет поля `deleted_at`, `deleted_by` и триггер, который запрещает удаление записей из таблицы. Также рекомендуется добавлять к таблицам основных сущностей
 * `addWatchColumns`: добавляет поля `create_at`, `created_by`, `updated_at`, `updated_by` без триггера. Имеет смысл вызывать отдельно, когда нужно сделать необязательными поля `created_by` и `updated_by`
 * `addSoftDeleteColumns`: просто добавляет поля `deleted_at` и `deleted_by`
-* touchParent: метод добавляет триггер, который меняет дату родительской записи при обновлении текущей записи с foreign key. Вызывается непосредственно для ForeignKeyDefinition.
+* `touchParent`: метод добавляет триггер, который меняет дату родительской записи при обновлении текущей записи с foreign key. Вызывается непосредственно для ForeignKeyDefinition.
+* `enum`: создаёт поле типа `ENUM` (а не текстовое поле с constraint, как было изначально). В моделях работать с ним можно как с обычной строкой. В PostgreSQL с типом `ENUM` есть некоторые ограничения при работе со списком доступных значений (см. [документацию PostgreSQL](https://postgrespro.ru/docs/postgresql/12/sql-altertype))
 
 # Работа с полями типа array
 
@@ -131,7 +133,7 @@ RabbitMQ используется для асинхронной передачи
 
 При создании/обновлении каждой сущности все значения полей, которые не входят в набор fillable-полей, помещаются в 
 массив unfilled. Его можно получить методом `getUnfilledAttributes` и использовать, например, в событии `saved` для 
-заполнения связанных сущностей. Именно так, кстати, заполняются переводимые поля сущности.
+заполнения связанных сущностей. Именно так, кстати, заполняются переводимые поля сущности. Посмотреть пример можно в трейте `ITLeague\Microservice\Traits\Models\Translatabe`
 
 ### Создание дополнительных фильтров и сортировок сущности
 
